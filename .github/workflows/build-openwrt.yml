@@ -96,7 +96,7 @@ jobs:
     - name: Load custom configuration
       run: |
         cp -Rf Actions-OpenWrt/* openwrt/
-        find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './' -exec cp -rf '{}' 'openwrt' \;
+        cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         cd openwrt
         echo "Apply files..."
         if [ -f "common/feeds.conf" ]; then
