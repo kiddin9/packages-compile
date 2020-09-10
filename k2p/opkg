@@ -12,7 +12,6 @@ sed -i ":a;$!N;s/Package: aria2\nVersion: ./Package: aria2\nVersion: 9/g;ba" Pac
 sed -i ":a;$!N;s/Package: netdata\nVersion: ./Package: netdata\nVersion: 9/g;ba" Packages
 sed -i ":a;$!N;s/Package: smartdns\nVersion: ./Package: smartdns\nVersion: 9/g;ba" Packages
 gzip -9nc Packages > Packages.gz
-
 cd -
 /usr/bin/sshpass -p Gary139715 scp -r openwrt/packages/* root@8.210.171.109:/data/wwwroot/op.supes.top/ramips/luci/
 #/usr/bin/sshpass -p 139715jia scp -r ~/openwrt/bin/packages/x86_64/custom/* root@10.0.0.1:/data/www/openwrt/x64/luci/
