@@ -90,6 +90,9 @@ jobs:
         ln -s /mnt/openwrt/dl openwrt/
         ln -s /mnt/openwrt/staging_dir openwrt/
 
+    - name: SSH connection to Actions
+      uses: garypang13/debugger-action@master
+
     - name: Load custom configuration
       run: |
         cp -Rf Actions-OpenWrt/* openwrt/
