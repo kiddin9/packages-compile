@@ -101,12 +101,12 @@ jobs:
         echo "Apply files..."
         if [ -f "common/feeds.conf" ]; then
         (
-          mv common/feeds.conf openwrt/
+          mv common/feeds.conf ./
         )
         fi       
         if [ -f "${{matrix.target}}/feeds.conf" ]; then
         (
-          mv ${{matrix.target}}/feeds.conf openwrt/
+          mv ${{matrix.target}}/feeds.conf ./
         )
         fi
         if [ -n "$(ls -A "common/files" 2>/dev/null)" ]; then
