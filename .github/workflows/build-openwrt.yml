@@ -184,15 +184,13 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        mkdir packages && find openwrt/bin/packages/*/custom/ \
-        | xargs -i mv -f {} ./packages/
-        cd packages
+        bash ${{matrix.target}}/opkg
+        cd openwrt/bin/packages/*/custom/
         echo "::set-env name=FIRMWARE::$PWD"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
-        bash ${{matrix.target}}/opkg
 
     - name: Create release
       id: create_release
