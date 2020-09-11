@@ -192,6 +192,29 @@ jobs:
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
 
+
+    - name: deploy files to server
+      uses: wlixcc/SFTP-Deploy-Action@v1.0
+      if: ${{matrix.target}} == "x86_64"
+      with:
+        username: 'root'
+        server: '8.210.171.109'
+        ssh_private_key: ${{ secrets.SSH_KEY }} 
+        local_path: './openwrt/bin/packages/x86_64/custom/*'
+        remote_path: '/data/wwwroot/op.supes.top/x64/luci/'
+        args: '-o ConnectTimeout=5'
+
+    - name: deploy files to server
+      uses: wlixcc/SFTP-Deploy-Action@v1.0
+      if: ${{matrix.target}} == "k2p"
+      with:
+        username: 'root'
+        server: '8.210.171.109'
+        ssh_private_key: ${{ secrets.SSH_KEY }} 
+        local_path: './openwrt/bin/packages/mipsel_24kc/custom/*'
+        remote_path: '/data/wwwroot/op.supes.top/ramips/luci/'
+        args: '-o ConnectTimeout=5'
+
     - name: Create release
       id: create_release
       uses: actions/create-release@main
