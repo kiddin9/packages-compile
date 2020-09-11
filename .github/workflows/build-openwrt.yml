@@ -195,6 +195,7 @@ jobs:
 
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
+      continue-on-error: true
       if: ${{matrix.target}} == "x86_64"
       with:
         username: 'root'
@@ -206,6 +207,7 @@ jobs:
 
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
+      continue-on-error: true
       if: ${{matrix.target}} == "k2p"
       with:
         username: 'root'
