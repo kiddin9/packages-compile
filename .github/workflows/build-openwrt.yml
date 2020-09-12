@@ -43,6 +43,7 @@ jobs:
       uses: actions/checkout@main
   
     - name: Load Settings.ini
+      if: env.TARGET == "x86_64"
       run: |
         source "${GITHUB_WORKSPACE}/${{matrix.target}}/settings.ini"
         echo "::set-env name=REPO_URL::${REPO_URL}"
