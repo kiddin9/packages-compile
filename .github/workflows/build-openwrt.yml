@@ -24,7 +24,6 @@ env:
   SCKEY: ${{ secrets.SCKEY }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-  TARGET: ${{matrix.target}}
   TZ: Asia/Shanghai
 
 jobs:
@@ -43,7 +42,6 @@ jobs:
       uses: actions/checkout@main
   
     - name: Load Settings.ini
-      if: env.TARGET == "x86_64"
       run: |
         source "${GITHUB_WORKSPACE}/${{matrix.target}}/settings.ini"
         echo "::set-env name=REPO_URL::${REPO_URL}"
@@ -57,6 +55,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
+        echo "::set-env name=TARGET::${{matrix.target}}"
 
     - name: Initialization environment
       env:
