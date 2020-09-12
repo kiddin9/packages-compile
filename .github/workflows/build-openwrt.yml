@@ -55,7 +55,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        echo "::set-env name=TARGET::${{matrix.target}}"
+        echo "::set-env name=TARGET::${matrix.target}"
 
     - name: Initialization environment
       env:
@@ -197,7 +197,7 @@ jobs:
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       continue-on-error: true
-      if: env.TARGET == "x86_64"
+      if: env.TARGET == 'x86_64'
       with:
         username: 'root'
         server: '8.210.171.109'
@@ -209,7 +209,7 @@ jobs:
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       continue-on-error: true
-      if: env.TARGET == "k2p"
+      if: env.TARGET == 'k2p'
       with:
         username: 'root'
         server: '8.210.171.109'
