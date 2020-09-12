@@ -24,6 +24,7 @@ env:
   SCKEY: ${{ secrets.SCKEY }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TARGET: ${{matrix.target}}
   TZ: Asia/Shanghai
 
 jobs:
@@ -196,7 +197,7 @@ jobs:
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       continue-on-error: true
-      if: ${{matrix.target}} == "x86_64"
+      if: env.TARGET == "x86_64"
       with:
         username: 'root'
         server: '8.210.171.109'
@@ -208,7 +209,7 @@ jobs:
     - name: deploy files to server
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       continue-on-error: true
-      if: ${{matrix.target}} == "k2p"
+      if: env.TARGET == "k2p"
       with:
         username: 'root'
         server: '8.210.171.109'
