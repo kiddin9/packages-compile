@@ -201,7 +201,7 @@ jobs:
       with:
         username: 'root'
         server: '8.210.171.109'
-        ssh_private_key: ${{ secrets.SSH_KEY }} 
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
         local_path: './openwrt/bin/packages/x86_64/custom/*'
         remote_path: '/data/wwwroot/op.supes.top/x64/luci/'
         args: '-o ConnectTimeout=5'
@@ -213,7 +213,7 @@ jobs:
       with:
         username: 'root'
         server: '8.210.171.109'
-        ssh_private_key: ${{ secrets.SSH_KEY }} 
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
         local_path: './openwrt/bin/packages/mipsel_24kc/custom/*'
         remote_path: '/data/wwwroot/op.supes.top/ramips/luci/'
         args: '-o ConnectTimeout=5'
