@@ -192,31 +192,25 @@ jobs:
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
-
-
-    - name: deploy files to server
-      uses: wlixcc/SFTP-Deploy-Action@v1.0
-      continue-on-error: false
-      if: env.TARGET == 'x86_64'
-      with:
-        username: 'root'
-        server: '8.210.171.109'
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
-        local_path: './openwrt/bin/packages/x86_64/custom/*'
-        remote_path: '/data/wwwroot/op.supes.top/x64/luci'
-        args: '-o ConnectTimeout=5'
+        echo $PWD >.git-ftp-include
 
     - name: deploy files to server
-      uses: wlixcc/SFTP-Deploy-Action@v1.0
-      continue-on-error: false
-      if: env.TARGET == 'k2p'
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
-        username: 'root'
-        server: '8.210.171.109'
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
-        local_path: './openwrt/bin/packages/mipsel_24kc/custom/*'
-        remote_path: '/data/wwwroot/op.supes.top/ramips/luci'
-        args: '-o ConnectTimeout=5'
+        ftp-server: ftp://op.supes.top:211
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: openwrt/bin/packages/x86_64/custom/
+        git-ftp-args: --remote-root x64/luci/
+
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      with:
+        ftp-server: ftp://op.supes.top:211
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: openwrt/bin/packages/mipsel_24kc/custom/
+        git-ftp-args: --remote-root ramips/luci/
 
     - name: Create release
       id: create_release
