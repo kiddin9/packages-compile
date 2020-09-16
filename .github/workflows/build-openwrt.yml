@@ -228,6 +228,14 @@ jobs:
       with:
         tag_name: ${{ env.date }}_${{ env.DEVICE_NAME }}
         release_name: ${{ env.date2 }} ${{ env.DEVICE_NAME }} ${{ env.EMOJI }}
+        body: |
+            墙内加速下载🔥:
+            
+            奶牛快传: ${{ env.COWURL }} 🚀
+            
+            WeTransfer: ${{ env.WETRANS }} ${{ env.EMOJI }}
+            
+            ${{ env.NOTICE }}
         draft: false
         prerelease: false
 
