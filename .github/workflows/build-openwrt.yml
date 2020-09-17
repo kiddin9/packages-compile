@@ -138,9 +138,6 @@ jobs:
         if [ -n "$(ls -A "${{matrix.target}}/diy" 2>/dev/null)" ]; then
          cp -Rf ${{matrix.target}}/diy/* ./
         fi
-        if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
-         cp -Rf ${{matrix.target}}/addons/* ./
-        fi
         if [ -n "$(ls -A "common/patches" 2>/dev/null)" ]; then
         (
           find "common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p0 --forward" || true
@@ -185,14 +182,17 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        bash ${{matrix.target}}/opkg
         cd openwrt/bin/packages/*/custom/
         echo "::set-env name=FIRMWARE::$PWD"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
-        echo "!$PWD/" >.git-ftp-include
+        echo "!$PWD/" >${GITHUB_WORKSPACE}/.git-ftp-include
+        if [ -n "$(ls -A "${GITHUB_WORKSPACE}/${{matrix.target}}/addons" 2>/dev/null)" ]; then
+         cp -Rf ${GITHUB_WORKSPACE}/${{matrix.target}}/addons/* $PWD
+        fi
+        bash ${GITHUB_WORKSPACE}/${{matrix.target}}/opkg
 
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
