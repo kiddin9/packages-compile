@@ -182,8 +182,8 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        cp openwrt/.config  openwrt/bin/packages/*/custom/${{matrix.target}}_packages.config
         cd openwrt/bin/packages/*/custom/
+        cp ${GITHUB_WORKSPACE}/openwrt/.config  ${{matrix.target}}_packages.config
         echo "::set-env name=FIRMWARE::$PWD"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
