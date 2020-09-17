@@ -195,24 +195,6 @@ jobs:
         fi
         bash ${GITHUB_WORKSPACE}/${{matrix.target}}/opkg
 
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      if: env.TARGET == 'x86_64'
-      with:
-        ftp-server: ftp://supes.top:211/x64/custom/
-        ftp-username: jia
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: openwrt/bin/packages/x86_64/custom/
-
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      if: env.TARGET == 'k2p'
-      with:
-        ftp-server: ftp://supes.top:211/mipsel/custom/
-        ftp-username: jia
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: openwrt/bin/packages/mipsel_24kc/custom/
-
     - name: Create release
       id: create_release
       uses: actions/create-release@main
@@ -242,7 +224,25 @@ jobs:
         pattern: "${{ env.FIRMWARE }}/*"
         github-token: ${{ secrets.REPO_TOKEN }}
         release-url: ${{ steps.create_release.outputs.upload_url }}
-        
+ 
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      if: env.TARGET == 'x86_64'
+      with:
+        ftp-server: ftp://supes.top:211/x64/
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: openwrt/bin/packages/x86_64/custom/
+
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      if: env.TARGET == 'k2p'
+      with:
+        ftp-server: ftp://supes.top:211/mipsel/
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: openwrt/bin/packages/mipsel_24kc/custom/
+
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
       continue-on-error: true
@@ -278,6 +278,5 @@ jobs:
 
     - name: Telegram notification
       if: env.TELEGRAM_TOKEN
-      continue-on-error: true
       run: |
         [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.DEVICE_NAME }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
