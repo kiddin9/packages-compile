@@ -56,17 +56,6 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
         echo "::set-env name=TARGET::${{matrix.target}}"
-        mkdir -p openwrt/bin/packages/x86_64/custom
-        touch openwrt/bin/packages/x86_64/custom/aa
-        echo "!openwrt/bin/packages/x86_64/custom/" >.git-ftp-include
-
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      with:
-        ftp-server: ftp://supes.top:211/x64/custom/
-        ftp-username: root
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: openwrt/bin/packages/x86_64/custom/
 
     - name: Initialization environment
       env:
@@ -203,16 +192,15 @@ jobs:
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
-        echo "$PWD/" >.git-ftp-include
+        echo "!$PWD/" >.git-ftp-include
 
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
-        ftp-server: ftp://dd.supes.top:211/
+        ftp-server: ftp://supes.top:211/x64/custom/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         local-dir: openwrt/bin/packages/x86_64/custom/
-        git-ftp-args: --remote-root x64/custom/
 
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
@@ -221,7 +209,6 @@ jobs:
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         local-dir: openwrt/bin/packages/mipsel_24kc/custom/
-        git-ftp-args: --remote-root mipsel/custom/
 
     - name: Create release
       id: create_release
