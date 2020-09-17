@@ -66,6 +66,7 @@ jobs:
         ftp-server: ftp://supes.top:211/x64/custom/
         ftp-username: root
         ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: openwrt/bin/packages/x86_64/custom/
 
     - name: Initialization environment
       env:
