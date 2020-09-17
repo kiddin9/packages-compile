@@ -125,7 +125,7 @@ jobs:
           /bin/bash "${{matrix.target}}/$DIY_SH"
         )
         fi
-         mv ${{matrix.target}}/${{matrix.target}}.config .config
+         mv ${{matrix.target}}/$CONFIG_FILE .config
         if [ -f "common/default-settings" ]; then
          cp -f common/default-settings package/*/*/default-settings/files/zzz-default-settings
         fi
@@ -182,6 +182,7 @@ jobs:
     - name: Organize files
       id: organize
       run: |
+        cp openwrt/.config  openwrt/bin/packages/*/custom/${{matrix.target}}_packages.config
         cd openwrt/bin/packages/*/custom/
         echo "::set-env name=FIRMWARE::$PWD"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
