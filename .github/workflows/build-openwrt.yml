@@ -185,10 +185,8 @@ jobs:
         mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -maxdepth 1 -type d ! -path './'` packages/
         cp openwrt/.config  packages/${{matrix.target}}_packages.config
         cp openwrt/addon/* packages/
-        bash ../${{matrix.target}}/opkg
-        cd packages
-        echo "::set-env name=FIRMWARE::$PWD"
-        cd -
+        bash ${{matrix.target}}/opkg
+        echo "::set-env name=FIRMWARE::$PWD/packages"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
