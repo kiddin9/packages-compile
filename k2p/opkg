@@ -5,7 +5,7 @@
 SCRIPT=${GITHUB_WORKSPACE}/openwrt/scripts/ipkg-make-index.sh
 export PATH="${GITHUB_WORKSPACE}/openwrt/staging_dir/host/bin:$PATH"
 # Generates package manifest
-cd ${GITHUB_WORKSPACE}/openwrt/bin/packages/*/custom
+cd ${GITHUB_WORKSPACE}/packages
 $SCRIPT . 2>/dev/null > Packages.manifest
 grep -vE '^(Maintainer|LicenseFiles|Source|Require)' Packages.manifest > Packages
 sed -i ":a;$!N;s/Package: aria2\nVersion: ./Package: aria2\nVersion: 9/g;ba" Packages
