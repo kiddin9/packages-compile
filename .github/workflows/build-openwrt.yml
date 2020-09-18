@@ -184,7 +184,9 @@ jobs:
       run: |
         mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -maxdepth 1 -type d ! -path './'` packages/
         cp openwrt/.config  packages/${{matrix.target}}_packages.config
-        cp openwrt/addon/* packages/
+        if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
+         cp -Rf ${{matrix.target}}/addons/* packages/
+        fi
         bash ${{matrix.target}}/opkg
         echo "::set-env name=FIRMWARE::$PWD/packages"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
@@ -192,9 +194,6 @@ jobs:
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
         echo "!packages/" >.git-ftp-include
-        if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
-         cp -Rf ${{matrix.target}}/addons/* packages/
-        fi
 
     - name: Create release
       id: create_release
