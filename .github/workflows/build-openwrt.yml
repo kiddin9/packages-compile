@@ -182,18 +182,19 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        cd openwrt/bin/packages/*/custom/
-        cp ${GITHUB_WORKSPACE}/openwrt/.config  ${{matrix.target}}_packages.config
+        mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -maxdepth 1 -type d ! -path './'` packages/
+        cp openwrt/.config  ${{matrix.target}}_packages.config
+        cd packages
         echo "::set-env name=FIRMWARE::$PWD"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "::set-env name=EMOJI::${Emoji[$rand]}"
-        echo "!$PWD/" >${GITHUB_WORKSPACE}/.git-ftp-include
-        if [ -n "$(ls -A "${GITHUB_WORKSPACE}/${{matrix.target}}/addons" 2>/dev/null)" ]; then
-         cp -Rf ${GITHUB_WORKSPACE}/${{matrix.target}}/addons/* $PWD
+        echo "!packages/" >../.git-ftp-include
+        if [ -n "$(ls -A "../${{matrix.target}}/addons" 2>/dev/null)" ]; then
+         cp -Rf ../${{matrix.target}}/addons/* $PWD
         fi
-        bash ${GITHUB_WORKSPACE}/${{matrix.target}}/opkg
+        bash ../${{matrix.target}}/opkg
 
     - name: Create release
       id: create_release
@@ -232,7 +233,7 @@ jobs:
         ftp-server: ftp://supes.top:211/x64/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: openwrt/bin/packages/x86_64/custom/
+        local-dir: packages/
 
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
@@ -241,7 +242,7 @@ jobs:
         ftp-server: ftp://supes.top:211/mipsel/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: openwrt/bin/packages/mipsel_24kc/custom/
+        local-dir: packages/
 
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
