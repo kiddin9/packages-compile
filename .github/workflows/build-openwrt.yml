@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64]
+        target: [x86_64,k2p]
         
     steps:
     - name: Checkout
@@ -249,7 +249,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'x86_64'
       with:
-        ftp-server: ftp://8.210.171.109/x64/
+        ftp-server: ftp://op.supes.top/x64/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         local-dir: packages/
@@ -258,7 +258,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'k2p'
       with:
-        ftp-server: ftp://supes.top:211/mipsel/
+        ftp-server: ftp://op.supes.top/mipsel/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         local-dir: packages/
