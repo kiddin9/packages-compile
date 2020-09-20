@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64,k2p]
+        target: [x86_64]
         
     steps:
     - name: Checkout
@@ -249,7 +249,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'x86_64'
       with:
-        ftp-server: ftp://supes.top:211/x64/
+        ftp-server: ftp://8.210.171.109/x64/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         local-dir: packages/
@@ -279,4 +279,4 @@ jobs:
     - name: Telegram notification
       if: env.TELEGRAM_TOKEN
       run: |
-        [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.DEVICE_NAME }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
+        # [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.DEVICE_NAME }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
