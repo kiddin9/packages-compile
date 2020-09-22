@@ -41,14 +41,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      if: env.TARGET == 'k2p'
-      with:
-        ftp-server: ftp://op.supes.top/mipsel/
-        ftp-username: jia
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-
     - name: Load Settings.ini
       run: |
         source "${GITHUB_WORKSPACE}/${{matrix.target}}/settings.ini"
@@ -64,6 +56,14 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
         echo "::set-env name=TARGET::${{matrix.target}}"
+
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      if: env.TARGET == 'k2p'
+      with:
+        ftp-server: ftp://op.supes.top/mipsel/
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
 
     - name: Initialization environment
       env:
