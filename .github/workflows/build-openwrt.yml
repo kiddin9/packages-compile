@@ -57,6 +57,15 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
         echo "::set-env name=TARGET::${{matrix.target}}"
 
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@master
+      if: env.TARGET == 'x86_64'
+      with:
+        ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        git-ftp-args: --insecure
+
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
