@@ -57,15 +57,6 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
         echo "::set-env name=TARGET::${{matrix.target}}"
 
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@master
-      if: env.TARGET == 'x86_64'
-      with:
-        ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
-        ftp-username: root
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        git-ftp-args: --insecure
-
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -259,7 +250,7 @@ jobs:
       if: env.TARGET == 'x86_64'
       with:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
-        ftp-username: jia
+        ftp-username: root
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         git-ftp-args: --insecure
         local-dir: packages/
@@ -269,7 +260,7 @@ jobs:
       if: env.TARGET == 'k2p'
       with:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/mipsel/
-        ftp-username: jia
+        ftp-username: root
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         git-ftp-args: --insecure
         local-dir: packages/
