@@ -68,7 +68,7 @@ jobs:
         ftp-server: sftp://op.supes.top/
         ftp-username: root
         ftp-password: 139715jia
-        known-hosts: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDI57Kc9wd94PS6XW3eYsFEI+205pGrHCHKbetlL8MpxKBnaA912/e84aJAO1JrsDS5ptWa5ylMFuk5Aa44LxTOnH8YR63J/WD/PFQrPpbK+ZPkJiSim8LjJYQJ7TD9t183FPQedrNRpLsftwxozeN7E4ZwkDbSqzQwxyBC1o0jjolFUoO5Y2S1exvZauTcAPl5On3EVXlpOlZS/CXeufQREkq2Wp5qqKjZ4ZoTLP3+LNrDK4YHUaAmC7F8XfnQi8fpzG8BiEmidq0Flq9X1HFIen5SKLKgIVzDkB/lgk0czBRGW8LhHxYDwnM5yygHcvzc3TmkcNtFD7lgdfsSrnsJ
+        git-ftp-args: --insecure
 
     - name: Initialization environment
       env:
