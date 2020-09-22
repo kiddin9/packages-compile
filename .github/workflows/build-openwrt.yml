@@ -62,7 +62,7 @@ jobs:
       if: env.TARGET == 'x86_64'
       with:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
-        ftp-username: jia
+        ftp-username: root
         ftp-password: ${{ secrets.FTP_PASSWORD }}
         git-ftp-args: --insecure
 
