@@ -61,7 +61,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'k2p'
       with:
-        ftp-server: ftp://op.supes.top/mipsel/
+        ftp-server: ftp://124.156.138.74/mipsel/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
 
