@@ -252,7 +252,7 @@ jobs:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
-		git-ftp-args: --insecure
+        git-ftp-args: --insecure
         local-dir: packages/
 
     - name: deploy files to server
@@ -262,7 +262,7 @@ jobs:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/mipsel/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
-		git-ftp-args: --insecure
+        git-ftp-args: --insecure
         local-dir: packages/
 
     - name: Upload packages for artifact
