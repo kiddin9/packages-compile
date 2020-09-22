@@ -35,11 +35,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64,k2p]
+        target: [k2p]
         
     steps:
     - name: Checkout
       uses: actions/checkout@main
+
+    - name: deploy files to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      if: env.TARGET == 'k2p'
+      with:
+        ftp-server: ftp://op.supes.top/mipsel/
+        ftp-username: jia
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
 
     - name: Load Settings.ini
       run: |
