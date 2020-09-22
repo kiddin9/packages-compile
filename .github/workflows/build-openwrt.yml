@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [k2p]
+        target: [x86_64,k2p]
         
     steps:
     - name: Checkout
@@ -56,19 +56,6 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
         echo "::set-env name=TARGET::${{matrix.target}}"
-
-    - name: SSH connection to Actions
-      uses: garypang13/debugger-action@master
-      if: env.SSH_ACTIONS == 'false'
-
-    - name: deploy files to server
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
-      if: env.TARGET == 'k2p'
-      with:
-        ftp-server: sftp://op.supes.top/
-        ftp-username: root
-        ftp-password: 139715jia
-        git-ftp-args: --insecure
 
     - name: Initialization environment
       env:
@@ -262,18 +249,20 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'x86_64'
       with:
-        ftp-server: ftp://op.supes.top/x64/
+        ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
+		git-ftp-args: --insecure
         local-dir: packages/
 
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       if: env.TARGET == 'k2p'
       with:
-        ftp-server: ftp://op.supes.top/mipsel/
+        ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/mipsel/
         ftp-username: jia
         ftp-password: ${{ secrets.FTP_PASSWORD }}
+		git-ftp-args: --insecure
         local-dir: packages/
 
     - name: Upload packages for artifact
