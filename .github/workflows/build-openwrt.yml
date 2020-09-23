@@ -223,7 +223,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
         tag_name: ${{ env.date }}_${{ env.MTARGET }}
-        release_name: ${{ env.date2 }} ${{ env.MTARGET }} ${{ env.EMOJI }}
+        release_name: ${{ env.date2 }} ${{ env.MTARGET }} Packages ${{ env.EMOJI }}
         body: |
             墙内加速下载🔥:
             
