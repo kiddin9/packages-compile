@@ -161,7 +161,7 @@ jobs:
               
     - name: SSH connection to Actions
       uses: garypang13/debugger-action@master
-      if: env.SSH_ACTIONS == 'true'
+      if: contains(github.event.action, 'ssh')
 
     - name: Download package
       id: package
@@ -278,6 +278,6 @@ jobs:
         [ ${{ env.status }} == 'success' ] && curl https://sc.ftqq.com/${{ secrets.SCKEY }}.send?text=🎉OpenWrt_${{ env.date3 }}_${{ env.DEVICE_NAME }}软件仓库已更新😋|| curl https://sc.ftqq.com/${{ secrets.SCKEY }}.send?text=❌OpenWrt_${{ env.date3 }}_${{ env.DEVICE_NAME }}软件仓库更新失败😂
 
     - name: Telegram notification
-      if: env.TELEGRAM_TOKEN
+      if: env.TELEGRAM_TOKEN ! contains(github.event.action, 'notg')
       run: |
         # [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.DEVICE_NAME }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
