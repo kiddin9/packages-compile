@@ -54,6 +54,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
+        [ ${{matrix.target}} == "k2p" ] && echo "::set-env name=MTARGET::mipsel" || echo "::set-env name=MTARGET::x64"
 
     - name: Initialization environment
       env:
@@ -245,25 +246,13 @@ jobs:
 
     - name: deploy files to server
       uses: easingthemes/ssh-deploy@master
-      if: ${{matrix.target}} == 'x86_64'
       with:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-avzr --delete"
         SOURCE: "packages/"
         REMOTE_HOST: op.supes.top
         REMOTE_USER: root
-        TARGET: "/www/wwwroot/op.supes.top/x64/"
-
-    - name: deploy files to server
-      uses: easingthemes/ssh-deploy@master
-      if: ${{matrix.target}} == 'k2p'
-      with:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-avzr --delete"
-        SOURCE: "packages/"
-        REMOTE_HOST: op.supes.top
-        REMOTE_USER: root
-        TARGET: "/www/wwwroot/op.supes.top/mipsel/"
+        TARGET: "/www/wwwroot/op.supes.top/${{ env.MTARGET }}/"
 
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
