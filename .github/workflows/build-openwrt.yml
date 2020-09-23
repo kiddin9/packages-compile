@@ -54,11 +54,11 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        echo "::set-env name=TARGET::${{matrix.target}}"
+        echo "::set-env name=MTARGET::${{matrix.target}}"
 
     - name: deploy files to server
       uses: easingthemes/ssh-deploy@master
-      if: env.TARGET == 'k2p'
+      if: ${{matrix.target}} == 'k2p'
       with:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-avzr --delete"
@@ -257,7 +257,7 @@ jobs:
  
     - name: deploy files to server
       uses: SamKirkland/FTP-Deploy-Action@master
-      if: env.TARGET == 'x86_64'
+      if: env.MTARGET == 'x86_64'
       with:
         ftp-server: sftp://op.supes.top/www/wwwroot/op.supes.top/x64/
         ftp-username: root
