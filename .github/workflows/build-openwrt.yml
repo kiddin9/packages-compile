@@ -9,13 +9,12 @@
 name: Openwrt-AutoBuild
 
 on: 
+  repository_dispatch:
   # push: 
   #   branches:
   #     - master
   #schedule:
    # - cron: 0 1 */3 * *
-  watch:
-    types: started
 
 env:
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -28,14 +27,14 @@ env:
 
 jobs:
   build:
-    if: github.event.repository.owner.id == github.event.sender.id
+    if: github.event.repository.owner.id == github.event.sender.id && contains(github.event.action, 'pkg')
     runs-on: ubuntu-latest
     
     name: Build ${{matrix.target}}
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64,k2p]
+        target: ["${{ github.event.client_payload.target }}"]
         
     steps:
     - name: Checkout
