@@ -265,17 +265,6 @@ jobs:
         git-ftp-args: --insecure
         local-dir: packages/
 
-    - name: deploy files to server
-      uses: easingthemes/ssh-deploy@master
-      if: env.TARGET == 'k2p'
-      with:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-avzr --delete"
-        SOURCE: "packages/"
-        REMOTE_HOST: op.supes.top
-        REMOTE_USER: root
-        TARGET: /www/wwwroot/op.supes.top/mipsel/
-
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
       continue-on-error: true
