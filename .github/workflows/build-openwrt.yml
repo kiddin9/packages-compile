@@ -43,7 +43,7 @@ jobs:
 
     - name: Load Settings.ini
       run: |
-        source "${GITHUB_WORKSPACE}/${{matrix.target}}/settings.ini"
+        source "${GITHUB_WORKSPACE}/common/settings.ini"
         echo "::set-env name=REPO_URL::${REPO_URL}"
         echo "::set-env name=REPO_BRANCH::${REPO_BRANCH}"
         echo "::set-env name=CONFIG_FILE::${CONFIG_FILE}"
