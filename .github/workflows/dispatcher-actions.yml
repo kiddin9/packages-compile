@@ -252,7 +252,7 @@ jobs:
         SOURCE: "packages/"
         REMOTE_HOST: op.supes.top
         REMOTE_USER: root
-        TARGET: "/www/wwwroot/op.supes.top/${{ env.MTARGET }}/"
+        TARGET: "/www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/"
 
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
