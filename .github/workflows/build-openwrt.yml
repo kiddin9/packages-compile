@@ -61,6 +61,7 @@ jobs:
         echo "::set-env name=MTARGET::x64"
         else
         echo "::set-env name=MTARGET::arm"
+        fi
 
     - name: Initialization environment
       env:
