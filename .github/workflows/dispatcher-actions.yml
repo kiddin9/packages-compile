@@ -54,7 +54,13 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        [ ${{matrix.target}} == "k2p" ] && echo "::set-env name=MTARGET::mipsel" || echo "::set-env name=MTARGET::x64"
+        if [ ${{matrix.target}} == "k2p" ]; then
+        echo "::set-env name=MTARGET::mipsel"
+        elif [ ${{matrix.target}} == "x86_64" ]; then
+        echo "::set-env name=MTARGET::x64"
+        else
+        echo "::set-env name=MTARGET::aarch64"
+        fi
 
     - name: Initialization environment
       env:
