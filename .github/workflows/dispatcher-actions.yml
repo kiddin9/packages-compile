@@ -42,7 +42,7 @@ jobs:
 
     - name: Load Settings.ini
       run: |
-        source "${GITHUB_WORKSPACE}/${{matrix.target}}/settings.ini"
+        source "${GITHUB_WORKSPACE}/common/settings.ini"
         echo "::set-env name=REPO_URL::${REPO_URL}"
         echo "::set-env name=REPO_BRANCH::${REPO_BRANCH}"
         echo "::set-env name=CONFIG_FILE::${CONFIG_FILE}"
@@ -192,7 +192,7 @@ jobs:
         if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
          cp -Rf ${{matrix.target}}/addons/* packages/
         fi
-        bash ${{matrix.target}}/opkg
+        bash common/opkg
         echo "::set-env name=FIRMWARE::$PWD/packages"
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         RANDOM=$$$(date +%s)
