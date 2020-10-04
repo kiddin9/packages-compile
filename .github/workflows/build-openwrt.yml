@@ -190,6 +190,7 @@ jobs:
       run: |
         mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -type f` packages/
         cp openwrt/.config  packages/${{matrix.target}}_packages.config
+        cp -Rf common/addons/* packages/
         if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
          cp -Rf ${{matrix.target}}/addons/* packages/
         fi
