@@ -31,10 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     
     name: Build ${{matrix.target}}
-    strategy:
-      fail-fast: false
-      matrix:
-        target: ["${{ github.event.client_payload.target }}"]
+
         
     steps:
     - name: Checkout
@@ -54,6 +51,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
+        echo "::set-env name=client_payload_target::${github.event.client_payload.target}"
         if [ ${{matrix.target}} == "k2p" ]; then
         echo "::set-env name=MTARGET::mipsel"
         elif [ ${{matrix.target}} == "x86_64" ]; then
@@ -278,3 +276,8 @@ jobs:
       if: env.TELEGRAM_TOKEN && ! contains(github.event.action, 'notg')
       run: |
         # [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.MTARGET }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["${{ env.client_payload_target }}"]
