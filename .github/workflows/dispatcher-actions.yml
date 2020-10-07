@@ -54,7 +54,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        if [ ${{matrix.target}} == "k2p" ]; then
+        if [ ${{matrix.target}} == "phicomm-k2p" ]; then
         echo "::set-env name=MTARGET::mipsel"
         elif [ ${{matrix.target}} == "x86_64" ]; then
         echo "::set-env name=MTARGET::x64"
@@ -152,9 +152,6 @@ jobs:
         )
         fi
         make defconfig
-        [ $(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/') == generic ] && DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/CONFIG_TARGET_(.*)_DEVICE_.*=y/\1/') || DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/')
-        DEVICE_NAME=`echo ${DEVICE_NAME/xiaomi_redmi-router/redmi}`
-        echo "::set-env name=DEVICE_NAME::$DEVICE_NAME"
         
     - name: Default PPPOE Setting
       if: env.PPPOE_USERNAME && env.PPPOE_PASSWD
