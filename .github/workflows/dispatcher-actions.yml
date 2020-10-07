@@ -31,7 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     
     name: Build ${{matrix.target}}
-
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["${{ github.event.client_payload.target }}"]
         
     steps:
     - name: Checkout
@@ -51,7 +54,6 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        echo "::set-env name=CLIENT_PAYLOAD_TARGET::k2p"
         if [ ${{matrix.target}} == "k2p" ]; then
         echo "::set-env name=MTARGET::mipsel"
         elif [ ${{matrix.target}} == "x86_64" ]; then
@@ -89,10 +91,8 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/staging_dir
-        #ln -s /mnt/openwrt/build_dir/hostpkg openwrt/build_dir/
-        #ln -s /mnt/openwrt/build_dir/host openwrt/build_dir/
-        ln -s /mnt/openwrt/dl openwrt/
-        ln -s /mnt/openwrt/staging_dir openwrt/
+        ln -sf /mnt/openwrt/dl openwrt/dl
+        ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
 
     - name: Load custom configuration
       run: |
@@ -276,8 +276,3 @@ jobs:
       if: env.TELEGRAM_TOKEN && ! contains(github.event.action, 'notg')
       run: |
         # [ ${{ env.status }} == 'success' ] && curl -k --data chat_id="-1001382947163" --data "text=🎉 OpenWrt ${{ env.date3 }} ${{ env.MTARGET }} 软件仓库已更新 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        target: ["${{ env.CLIENT_PAYLOAD_TARGET }}"]
