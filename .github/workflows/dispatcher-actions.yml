@@ -51,7 +51,7 @@ jobs:
         echo "::set-env name=UPLOAD_FIRMWARE_FOR_RELEASE::${UPLOAD_FIRMWARE_FOR_RELEASE}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_COWTRANSFER::${UPLOAD_FIRMWARE_TO_COWTRANSFER}"
         echo "::set-env name=UPLOAD_FIRMWARE_TO_WETRANSFER::${UPLOAD_FIRMWARE_TO_WETRANSFER}"
-        echo "::set-env name=client_payload_target::${github.event.client_payload.target}"
+        echo "::set-env name=CLIENT_PAYLOAD_TARGET::k2p"
         if [ ${{matrix.target}} == "k2p" ]; then
         echo "::set-env name=MTARGET::mipsel"
         elif [ ${{matrix.target}} == "x86_64" ]; then
@@ -280,4 +280,4 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ["${{ env.client_payload_target }}"]
+        target: ["${{ env.CLIENT_PAYLOAD_TARGET }}"]
