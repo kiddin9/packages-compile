@@ -151,6 +151,7 @@ jobs:
           find "${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
         )
         fi
+        sed -i "s/index()/index()\nif luci.sys.exec(\"cat \/etc\/openwrt_release | grep -o -E ^DISTRIB_DESCRIPTION='.*GaryPang'\") == \"\" then return end/g" package/feeds/custom/luci-app*/luasrc/controller/*.lua
         make defconfig
         
     - name: Default PPPOE Setting
