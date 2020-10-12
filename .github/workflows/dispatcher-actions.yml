@@ -27,7 +27,7 @@ env:
 
 jobs:
   build:
-    if: ! cancelled() && ! contains(github.event.action, 'pkg')
+    if: 1 == 1 && ! contains(github.event.action, 'pkg')
     runs-on: ubuntu-latest
     
     name: Build ${{matrix.target}}
