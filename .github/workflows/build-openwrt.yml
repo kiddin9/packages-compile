@@ -277,12 +277,14 @@ jobs:
 
     - name: Remove old Artifacts
       uses: c-hive/gha-remove-artifacts@v1.2.0
+      continue-on-error: true
       with:
         age: '1 day'
         skip-recent: 6
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: dev-drprasad/delete-older-releases@master
+      continue-on-error: true
       if: env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 6
