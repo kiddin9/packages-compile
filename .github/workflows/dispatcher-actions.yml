@@ -105,16 +105,16 @@ jobs:
           mv common/feeds.conf ./
         )
         fi
-        if [ -f "${{matrix.target}}/feeds.conf" ]; then
+        if [ -f "devices/${{matrix.target}}/feeds.conf" ]; then
         (
-          mv ${{matrix.target}}/feeds.conf ./
+          mv devices/${{matrix.target}}/feeds.conf ./
         )
         fi
         if [ -n "$(ls -A "common/files" 2>/dev/null)" ]; then
          cp -rf common/files files
         fi
-        if [ -n "$(ls -A "${{matrix.target}}/files" 2>/dev/null)" ]; then
-         cp -rf ${{matrix.target}}/files/* files/
+        if [ -n "$(ls -A "devices/${{matrix.target}}/files" 2>/dev/null)" ]; then
+         cp -rf devices/${{matrix.target}}/files/* files/
         fi
         if [ -f "common/$DIY_SH" ]; then
         (
@@ -122,33 +122,33 @@ jobs:
           /bin/bash "common/$DIY_SH"
         )
         fi       
-        if [ -f "${{matrix.target}}/$DIY_SH" ]; then
+        if [ -f "devices/${{matrix.target}}/$DIY_SH" ]; then
         (
-          chmod +x ${{matrix.target}}/$DIY_SH
-          /bin/bash "${{matrix.target}}/$DIY_SH"
+          chmod +x devices/${{matrix.target}}/$DIY_SH
+          /bin/bash "devices/${{matrix.target}}/$DIY_SH"
         )
         fi
-         mv ${{matrix.target}}/$CONFIG_FILE .config
+         mv devices/${{matrix.target}}/$CONFIG_FILE .config
         if [ -f "common/default-settings" ]; then
          cp -f common/default-settings package/*/*/default-settings/files/zzz-default-settings
         fi
-        if [ -f "${{matrix.target}}/default-settings" ]; then
-         cat ${{matrix.target}}/default-settings >> package/*/*/default-settings/files/zzz-default-settings
+        if [ -f "devices/${{matrix.target}}/default-settings" ]; then
+         cat devices/${{matrix.target}}/default-settings >> package/*/*/default-settings/files/zzz-default-settings
         fi
         if [ -n "$(ls -A "common/diy" 2>/dev/null)" ]; then
          cp -Rf common/diy/* ./
         fi
-        if [ -n "$(ls -A "${{matrix.target}}/diy" 2>/dev/null)" ]; then
-         cp -Rf ${{matrix.target}}/diy/* ./
+        if [ -n "$(ls -A "devices/${{matrix.target}}/diy" 2>/dev/null)" ]; then
+         cp -Rf devices/${{matrix.target}}/diy/* ./
         fi
         if [ -n "$(ls -A "common/patches" 2>/dev/null)" ]; then
         (
           find "common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
         )
         fi
-        if [ -n "$(ls -A "${{matrix.target}}/patches" 2>/dev/null)" ]; then
+        if [ -n "$(ls -A "devices/${{matrix.target}}/patches" 2>/dev/null)" ]; then
         (
-          find "${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
+          find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
         )
         fi
         sed -i "s/index()/index()\nif luci.sys.exec(\"cat \/etc\/openwrt_release | grep -o -E ^DISTRIB_DESCRIPTION='.*SNAPSHOT.*GaryPang'\") == \"\" then return end/g" package/feeds/custom/luci-app*/luasrc/controller/*.lua
@@ -186,8 +186,8 @@ jobs:
         mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -type f` packages/
         cp openwrt/.config  packages/${{matrix.target}}_packages.config
         cp -Rf common/addons/* packages/
-        if [ -n "$(ls -A "${{matrix.target}}/addons" 2>/dev/null)" ]; then
-         cp -Rf ${{matrix.target}}/addons/* packages/
+        if [ -n "$(ls -A "devices/${{matrix.target}}/addons" 2>/dev/null)" ]; then
+         cp -Rf devices/${{matrix.target}}/addons/* packages/
         fi
         bash common/opkg
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
