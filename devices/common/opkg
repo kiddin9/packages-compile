@@ -11,5 +11,6 @@ grep -vE '^(Maintainer|LicenseFiles|Source|Require)' Packages.manifest > Package
 sed -i ":a;$!N;s/Package: aria2\nVersion: ./Package: aria2\nVersion: 9/g;ba" Packages
 sed -i ":a;$!N;s/Package: netdata\nVersion: ./Package: netdata\nVersion: 9/g;ba" Packages
 sed -i ":a;$!N;s/Package: mwan3\nVersion: ./Package: mwan3\nVersion: 9/g;ba" Packages
+sed -i "s/Depends: libc, wget, frpc/Version: git-99.289.33737-a2c7457\nDepends: libc, wget, frpc/" Packages
 gzip -9nc Packages > Packages.gz
 cd -
