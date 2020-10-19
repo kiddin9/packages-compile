@@ -119,16 +119,16 @@ jobs:
         fi
         if [ -f "devices/common/$DIY_SH" ]; then
         (
-          chmod +x devices/common/$DIY_SH devices/common/custom.sh
+          chmod +x devices/common/$DIY_SH devices/common/custom.sh || true
           /bin/bash "devices/common/$DIY_SH"
-          /bin/bash "devices/common/custom.sh"
+          /bin/bash "devices/common/custom.sh" || true
         )
         fi       
         if [ -f "devices/${{matrix.target}}/$DIY_SH" ]; then
         (
-          chmod +x devices/${{matrix.target}}/$DIY_SH devices/${{matrix.target}}/custom.sh
+          chmod +x devices/${{matrix.target}}/$DIY_SH devices/${{matrix.target}}/custom.sh || true
           /bin/bash "devices/${{matrix.target}}/$DIY_SH"
-          /bin/bash "devices/${{matrix.target}}/custom.sh"
+          /bin/bash "devices/${{matrix.target}}/custom.sh" || true
         )
         fi
          mv devices/${{matrix.target}}/$CONFIG_FILE .config
