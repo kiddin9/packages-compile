@@ -100,10 +100,12 @@ jobs:
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         cd openwrt
         echo "Apply files..."
-        [ -f "devices/common/feeds.conf" ] &&
+        if [ -f "devices/common/feeds.conf" ]; then
           mv devices/common/feeds.conf ./
-        [ -f "devices/${{matrix.target}}/feeds.conf" ] &&
+        fi
+        if [ -f "devices/${{matrix.target}}/feeds.conf" ]; then
           mv devices/${{matrix.target}}/feeds.conf ./
+        fi
         if [ -n "$(ls -A "devices/common/files" 2>/dev/null)" ]; then
          cp -rf devices/common/files files
         fi
