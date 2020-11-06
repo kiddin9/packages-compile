@@ -56,11 +56,11 @@ jobs:
         echo "UPLOAD_FIRMWARE_TO_COWTRANSFER=${UPLOAD_FIRMWARE_TO_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
         if [ ${{matrix.target}} == "phicomm-k2p" ]; then
-        echo "MTARGET=mipsel" >> $GITHUB_ENV
-        elif [ ${{matrix.target}} == "x86_64" ]; then
-        echo "MTARGET=x64" >> $GITHUB_ENV
+            echo "MTARGET=mipsel" >> $GITHUB_ENV
+            elif [ ${{matrix.target}} == "x86_64" ]; then
+            echo "MTARGET=x64" >> $GITHUB_ENV
         else
-        echo "MTARGET=aarch64" >> $GITHUB_ENV
+            echo "MTARGET=aarch64" >> $GITHUB_ENV
         fi
 
     - name: Initialization environment
@@ -102,14 +102,10 @@ jobs:
         cd openwrt
         echo "Apply files..."
         if [ -f "devices/common/feeds.conf" ]; then
-        (
           mv devices/common/feeds.conf ./
-        )
         fi
         if [ -f "devices/${{matrix.target}}/feeds.conf" ]; then
-        (
           mv devices/${{matrix.target}}/feeds.conf ./
-        )
         fi
         if [ -n "$(ls -A "devices/common/files" 2>/dev/null)" ]; then
          cp -rf devices/common/files files
@@ -118,18 +114,14 @@ jobs:
          cp -rf devices/${{matrix.target}}/files/* files/
         fi
         if [ -f "devices/common/$DIY_SH" ]; then
-        (
           chmod +x devices/common/$DIY_SH devices/common/custom.sh || true
           /bin/bash "devices/common/$DIY_SH"
           /bin/bash "devices/common/custom.sh" || true
-        )
         fi       
         if [ -f "devices/${{matrix.target}}/$DIY_SH" ]; then
-        (
           chmod +x devices/${{matrix.target}}/$DIY_SH devices/${{matrix.target}}/custom.sh || true
           /bin/bash "devices/${{matrix.target}}/$DIY_SH"
           /bin/bash "devices/${{matrix.target}}/custom.sh" || true
-        )
         fi
          mv devices/${{matrix.target}}/$CONFIG_FILE .config
         if [ -f "devices/common/default-settings" ]; then
@@ -146,14 +138,10 @@ jobs:
          cp -Rf devices/${{matrix.target}}/diy/* ./
         fi
         if [ -n "$(ls -A "devices/common/patches" 2>/dev/null)" ]; then
-        (
           find "devices/common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
-        )
         fi
         if [ -n "$(ls -A "devices/${{matrix.target}}/patches" 2>/dev/null)" ]; then
-        (
           find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward" || true
-        )
         fi
         sed -i "s/index()/index()\nif luci.sys.exec(\"cat \/etc\/openwrt_release | grep -o -E ^DISTRIB_DESCRIPTION='.*SNAPSHOT.*GaryPang'\") == \"\" then return end/g" package/feeds/custom/luci-app*/luasrc/controller/*.lua
         make defconfig
