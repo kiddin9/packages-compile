@@ -177,7 +177,9 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        mkdir packages && cp -Rf `find openwrt/bin/packages/*/custom/ -type f` packages/
+        mkdir packages
+        cp -Rf `find openwrt/bin/packages/*/custom/ -type f` packages/
+        cp -Rf `find openwrt/bin/packages/*/packages/ -type f` packages/
         cp openwrt/.config  packages/${{matrix.target}}_packages.config
         cp -Rf devices/common/addons/* packages/
         if [ -n "$(ls -A "devices/${{matrix.target}}/addons" 2>/dev/null)" ]; then
