@@ -4,7 +4,12 @@ shopt -s extglob
 
 sed -i '/	refresh_config();/d' scripts/feeds
 
-rm -rf feeds/custom/{frp,xray-core,.github,diy,mt-drivers,miniupnpd,mt7601u-ap,openwrt-fullconenat,mtk-eip93,rtl8*,r81*,shortcut-fe,mtk_apcli,fast-classifier,luci-app-mtwifi,oaf,ntfs3,natflow,.gitignore,LICENSE,README.md}
+rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,.gitignore,LICENSE,README.md}
+
+for ipk in $(find ./feeds/custom/*/ -maxdepth 0 -type d);
+do
+	[ -n "$(grep "KernelPackage" "$ipk/Makefile")" ] && rm -rf $ipk || true
+done
 
 rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs}
 rm -Rf feeds/luci/modules/!(luci-base)
