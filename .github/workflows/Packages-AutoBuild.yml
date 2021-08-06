@@ -190,11 +190,7 @@ jobs:
           echo -e "$(($(nproc)+1)) thread compile"
           for ipk in $(ls custom.b); do
             echo $ipk
-            if [[ $ipk == luci-* ]]; then
               gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')
-            else
-              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk/Makefile&per_page=1" | jq -r '.[0].commit.committer.date')
-            fi
             if [ $gitdate != null ]; then
               gitdate=$(date -d "$gitdate" +%s)
               now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
