@@ -197,10 +197,10 @@ jobs:
             if [ $gitdate != null ]; then
               gitdate=$(date -d "$gitdate" +%s)
               now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
-              if [[ $(expr $gitdate + 90000) > $now ]]; then
+              #if [[ $(expr $gitdate + 90000) > $now ]]; then
                 cp -rf custom.b/$ipk package/feeds/custom/
                 make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
-              fi
+              #fi
             fi
           done
         echo "status=success" >> $GITHUB_ENV
