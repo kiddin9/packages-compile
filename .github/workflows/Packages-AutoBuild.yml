@@ -172,7 +172,7 @@ jobs:
         fi
         svn export --force https://github.com/kiddin9/OpenWrt_x86-r2s-r4s/trunk/devices/common/patches patches
         svn export --force https://github.com/kiddin9/OpenWrt_x86-r2s-r4s/trunk/devices/${{matrix.target}}/patches patches >/dev/null 2>&1
-        find "patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" >/dev/null 2>&1
+        find "patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" >/dev/null 2>&1 || true
       
     - name: SSH connection to Actions
       uses: kiddin9/debugger-action@master
