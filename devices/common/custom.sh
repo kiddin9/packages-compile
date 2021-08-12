@@ -5,7 +5,7 @@ sed -i '/telephony/d' feeds.conf.default
 sed -i '/routing/d' feeds.conf.default
 echo "src-git custom https://github.com/kiddin9/openwrt-packages.git" >>feeds.conf.default
 ./scripts/feeds update -a
-rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,.gitignore,LICENSE,README.md}
+rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,mtk_apcli,.gitignore,LICENSE,README.md}
 
 for ipk in $(find ./feeds/custom/*/ -maxdepth 0 -type d);
 do
