@@ -204,7 +204,7 @@ jobs:
       if: contains(github.event.action, 'aarch64') == false && contains(github.event.action, 'r2s') == false && contains(github.event.action, 'x86_64') == false && contains(github.event.action, 'mipsel') == false && contains(github.event.action, 'ac2100') == false && contains(github.event.action, 'Rpi-4B') == false
       run: |
         cd openwrt
-        cp -rf custom.b/${{ github.event.action }} package/feeds/custom/
+        cp -rf custom.b/${{ github.event.action }} package/feeds/custom/ || true
           echo -e "$(($(nproc)+1)) thread compile"
           make package/${{ github.event.action }}/compile -j$(($(nproc)+1)) || make package/${{ github.event.action }}/compile -j1 V=s
 
