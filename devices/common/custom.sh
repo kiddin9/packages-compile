@@ -1,9 +1,10 @@
 #!/bin/bash
 
 shopt -s extglob
-
-sed -i '/	refresh_config();/d' scripts/feeds
-
+sed -i '/telephony/d' feeds.conf.default
+sed -i '/routing/d' feeds.conf.default
+echo "src-git custom https://github.com/kiddin9/openwrt-packages.git" >>feeds.conf.default
+./scripts/feeds update -a
 rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,.gitignore,LICENSE,README.md}
 
 for ipk in $(find ./feeds/custom/*/ -maxdepth 0 -type d);
@@ -43,6 +44,7 @@ for ipk in $(find package/feeds/custom/* -maxdepth 0); do
 done
 sed -i 's/$(VERSION) &&/$(VERSION) ;/g' include/download.mk
 
+cp -f devices/common/.config .config
 mv feeds/base feeds/base.bak
 mv feeds/packages feeds/packages.bak
 make defconfig
