@@ -182,31 +182,29 @@ jobs:
         mv -f custom.b/{wxbase,lib*,rapidjson,jpcre2,quickjspp,qtbase,qttools,rblibtorrent} package/feeds/custom/
 
     - name: Compile the firmware
-      if: contains(github.event.action, 'aarch64') || contains(github.event.action, 'r2s') || contains(github.event.action, 'x86_64') || contains(github.event.action, 'mipsel') || contains(github.event.action, 'ac2100') || contains(github.event.action, 'Rpi-4B')
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          for ipk in $(ls custom.b); do
+          fpkg="$(echo ${{github.event.action}} | sed -e 's/aarch64_generic//' -e 's/x86_64//' -e 's/aarch64_cortex-a72//' -e 's/ init//' -e 's/ ssh//' -e 's/ noser//' -e 's/ cw//')"
+          [ "$fpkg" ] && fpkg="^$fpkg$"
+          for ipk in $(ls custom.b | grep "$fpkg"); do
             echo $ipk
+            if [[ "$fpkg" || "$(echo ${{github.event.action}} | grep ' init')" ]]; then
+              cp -rf custom.b/$ipk package/feeds/custom/
+              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
+            else
               gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')
-            if [ $gitdate != null ]; then
-              gitdate=$(date -d "$gitdate" +%s)
-              now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
-              if [[ $(expr $gitdate + 90000) > $now ]]; then
-                cp -rf custom.b/$ipk package/feeds/custom/
-                make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
+              if [ $gitdate != null ]; then
+                gitdate=$(date -d "$gitdate" +%s)
+                now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
+                if [[ $(expr $gitdate + 90000) > $now ]]; then
+                  cp -rf custom.b/$ipk package/feeds/custom/
+                  make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
+                fi
               fi
             fi
           done
         echo "status=success" >> $GITHUB_ENV
-
-    - name: Compile single package
-      if: contains(github.event.action, 'aarch64') == false && contains(github.event.action, 'r2s') == false && contains(github.event.action, 'x86_64') == false && contains(github.event.action, 'mipsel') == false && contains(github.event.action, 'ac2100') == false && contains(github.event.action, 'Rpi-4B') == false
-      run: |
-        cd openwrt
-        cp -rf custom.b/${{ github.event.action }} package/feeds/custom/ || true
-          echo -e "$(($(nproc)+1)) thread compile"
-          make package/${{ github.event.action }}/compile -j$(($(nproc)+1)) || make package/${{ github.event.action }}/compile -j1 V=s
 
     - name: Check space usage
       run: df -hT
