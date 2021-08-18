@@ -8,7 +8,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 ./scripts/feeds update -a
 rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,mtk_apcli,.gitignore,LICENSE,README.md}
 
-for ipk in $(find ./feeds/custom/*/ -maxdepth 0 -type d);
+for ipk in $(ls -d ./feeds/custom/*);
 do
 	[ -n "$(grep "KernelPackage" "$ipk/Makefile")" ] && rm -rf $ipk || true
 done
@@ -36,10 +36,9 @@ sed -i 's/Os/O2/g' include/target.mk
 sed -i "s/+nginx\( \|$\)/+nginx-ssl\1/g"  package/feeds/custom/*/Makefile
 sed -i 's/+python\( \|$\)/+python3/g' package/feeds/custom/*/Makefile
 sed -i 's?../../lang?$(TOPDIR)/feeds/packages/lang?g' package/feeds/custom/*/Makefile
-for ipk in $(find package/feeds/custom/* -maxdepth 0); do	
+for ipk in $(ls -d ./feeds/custom/*);do
 	if [[ ! -d "$ipk/patches" ]]; then
-		find $ipk/ -maxdepth 1 -name "Makefile" ! -path *tcping* ! -path *rblibtorrent* ! -path *n2n_v2* \
-		| xargs -i sed -i "s/PKG_SOURCE_VERSION:=[0-9a-z]\{7,\}/PKG_SOURCE_VERSION:=HEAD/g" {}
+		sed -i "s/PKG_SOURCE_VERSION:=[0-9a-z]\{7,\}/PKG_SOURCE_VERSION:=HEAD/g" !(luci-*|rblibtorrent|n2n_v2)/Makefile
 	fi
 done
 sed -i 's/$(VERSION) &&/$(VERSION) ;/g' include/download.mk
