@@ -1,9 +1,6 @@
 #!/bin/bash
 
 shopt -s extglob
-sed -i '/telephony/d' feeds.conf.default
-sed -i '/routing/d' feeds.conf.default
-echo "src-git custom https://github.com/kiddin9/openwrt-packages.git" >>feeds.conf.default
 sed -i '/	refresh_config();/d' scripts/feeds
 ./scripts/feeds update -a
 rm -rf feeds/custom/{xray-core,.github,diy,mt-drivers,miniupnpd,shortcut-fe,luci-app-mtwifi,mtk_apcli,.gitignore,LICENSE,README.md}
