@@ -179,7 +179,7 @@ jobs:
         make defconfig
         mv -f package/feeds/custom custom.b
         mv -f feeds/packages/lang feeds/packages/lang.b
-        mv -f feeds/packages feeds/packages.b && mv -f feeds/base feeds/base.b
+        mv -f feeds/packages feeds/packages.b
         mkdir package/feeds/custom
         mv -f custom.b/{wxbase,lib*,rapidjson,jpcre2,quickjspp,qtbase,qttools,rblibtorrent} package/feeds/custom/
 
@@ -194,13 +194,13 @@ jobs:
             function comp(){
              cp -rf custom.b/$ipk package/feeds/custom/
              if [[ $ipk != luci-* ]]; then
-              mv -f feeds/packages.b feeds/packages && mv -f feeds/base.b feeds/base
+              mv -f feeds/packages.b feeds/packages
               [ "$(grep "PKG_BUILD_DEPENDS" "package/feeds/custom/$ipk/Makefile")" ] && mv feeds/packages/lang.b feeds/packages/lang
              fi
              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
              if [[ $ipk != luci-* ]]; then
-              mv -f feeds/packages feeds/packages.b && mv -f feeds/base feeds/base.b
               mv feeds/packages/lang feeds/packages/lang.b || true
+              mv -f feeds/packages feeds/packages.b
               rm -f package/feeds/custom/$ipk
              fi
             }

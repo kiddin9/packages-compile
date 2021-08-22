@@ -10,7 +10,7 @@ do
 	[ -n "$(grep "KernelPackage" "$ipk/Makefile")" ] && rm -rf $ipk || true
 done
 
-rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs}
+rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
 # rm -rf feeds/packages/libs/!(libev|c-ares|cjson|boost|lib*|expat|tiff|freetype|udns|pcre2)
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
@@ -22,7 +22,6 @@ rm -Rf feeds/base/package/network/!(services)
 rm -Rf feeds/base/package/network/services/!(ppp)
 rm -Rf feeds/base/package/utils/!(util-linux|lua)
 rm -Rf feeds/base/package/system/!(opkg|ubus|uci)
-rm -Rf feeds/custom/luci-app-*/po/!(zh_Hans)
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
