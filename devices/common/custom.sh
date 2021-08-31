@@ -26,6 +26,7 @@ rm -Rf feeds/base/package/system/!(opkg|ubus|uci)
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
+sed -i 's/\/cgi-bin\/\(luci\|cgi-\)/\/\1/g' `find package/feeds/custom/luci-*/ -name "*.lua" -or -name "*.htm*" -or -name "*.js"` &
 sed -i 's/Os/O2/g' include/target.mk
 #rm -rf ./feeds/packages/lang/golang
 #svn co https://github.com/immortalwrt/packages/trunk/lang/golang feeds/packages/lang/golang
