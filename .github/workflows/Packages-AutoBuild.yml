@@ -106,6 +106,8 @@ jobs:
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "aarch64_generic" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "arm_arm1176jzf-s_vfp" ]]; then
+            curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2708/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2708_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a15_neon-vfpv4" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ipq806x/generic/openwrt-sdk-$REPO_BRANCH-ipq806x-generic_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a5_vfpv4" ]]; then
