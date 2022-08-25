@@ -210,8 +210,8 @@ jobs:
             if [[ "$fpkg" && ! "$during" ]]; then
               comp
             else
-              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')
-              if [ $gitdate != null ]; then
+              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date') || true
+              if [ "$gitdate" != null ]; then
                 gitdate=$(date -d "$gitdate" +%s)
                 now=$(date -d "$(date)" +%s)
                 [ "$during" ] || during="1.05"
