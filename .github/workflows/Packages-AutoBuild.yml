@@ -115,7 +115,7 @@ jobs:
         elif [[ ${{matrix.target}} == "aarch64_cortex-a72" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "aarch64_cortex-a53" ]]; then
-            curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/armvirt/64/openwrt-sdk-$REPO_BRANCH-armvirt-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+            curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/mediatek/mt7622/openwrt-sdk-$REPO_BRANCH-mediatek-mt7622_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a7_neon-vfpv4" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ipq40xx/generic/openwrt-sdk-$REPO_BRANCH-ipq40xx-generic_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a9" ]]; then
