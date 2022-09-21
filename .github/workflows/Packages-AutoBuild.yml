@@ -122,6 +122,8 @@ jobs:
             curl -fL -m 150 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm53xx/generic/openwrt-sdk-$REPO_BRANCH-bcm53xx-generic_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz || curl -fL -m 150 -o sdk.tar.xz https://downloads.cdn.openwrt.org/releases/$REPO_BRANCH/targets/bcm53xx/generic/openwrt-sdk-$REPO_BRANCH-bcm53xx-generic_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a9_vfpv3-d16" ]]; then
             curl -fL -m 150 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/mvebu/cortexa9/openwrt-sdk-$REPO_BRANCH-mvebu-cortexa9_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz || curl -fL -m 150 -o sdk.tar.xz https://downloads.cdn.openwrt.org/releases/$REPO_BRANCH/targets/mvebu/cortexa9/openwrt-sdk-$REPO_BRANCH-mvebu-cortexa9_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "arm_xscale" ]]; then
+            curl -fL -m 150 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/kirkwood/generic/openwrt-sdk-$REPO_BRANCH-kirkwood_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz || curl -fL -m 150 -o sdk.tar.xz https://downloads.cdn.openwrt.org/releases/$REPO_BRANCH/targets/kirkwood/generic/openwrt-sdk-$REPO_BRANCH-kirkwood_gcc-11.2.0_musl_eabi.Linux-x86_64.tar.xz
         fi
 
     - name: Free up disk space
@@ -187,7 +189,7 @@ jobs:
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|aarch64_cortex-a53\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
           during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
           function comp(){
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
