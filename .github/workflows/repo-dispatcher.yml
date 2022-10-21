@@ -30,7 +30,7 @@ env:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
-    runs-on: Ubuntu-20.04
+    runs-on: Ubuntu-22.04
     steps:
     - name: cancel running workflows
       uses: styfle/cancel-workflow-action@main
