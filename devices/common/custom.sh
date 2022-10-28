@@ -21,9 +21,14 @@ rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
 
+status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+echo "status $status"
+while [ "$status" == "running" ];do
+sleep 5
+done
+
 ./scripts/feeds install -a -p kiddin9 -f
 ./scripts/feeds install -a
-cd feeds/kiddin9; git pull; cd -
 
 sed -i 's/\(page\|e\)\?.acl_depends.*\?}//' `find package/feeds/kiddin9/luci-*/luasrc/controller/* -name "*.lua"`
 # sed -i 's/\/cgi-bin\/\(luci\|cgi-\)/\/\1/g' `find package/feeds/kiddin9/luci-*/ -name "*.lua" -or -name "*.htm*" -or -name "*.js"` &
