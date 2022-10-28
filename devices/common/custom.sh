@@ -21,7 +21,7 @@ rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
 
-status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 echo "status $status"
 while [ "$status" == "running" ];do
 sleep 5
