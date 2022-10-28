@@ -22,9 +22,9 @@ rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
 
 status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
-echo "status $status"
-while [ "$status" == "running" ];do
+while [ "$status" == "in_progress" ];do
 sleep 5
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 done
 
 ./scripts/feeds install -a -p kiddin9 -f
