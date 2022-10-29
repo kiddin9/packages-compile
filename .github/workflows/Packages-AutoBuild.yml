@@ -210,7 +210,6 @@ jobs:
               rm -rf package/feeds/kiddin9/$ipk
              fi
             }
-          [[ "$fpkg" == ".*" &&  ! "$during" ]] && rm -rvf feeds/packages/lang.b/node
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
             echo $ipk
             if [[ "$fpkg" && ! "$during" ]]; then
