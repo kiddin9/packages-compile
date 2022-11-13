@@ -13,6 +13,7 @@ rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
 rm -Rf feeds/packages/multimedia/!(gstreamer1|ffmpeg)
+rm -Rf feeds/packages/libs/libcups
 rm -Rf feeds/packages/net/!(mosquitto|curl)
 rm -Rf feeds/base/package/{firmware}
 rm -Rf feeds/base/package/network/!(services|utils)
@@ -21,10 +22,18 @@ rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
 
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+while [ "$status" == "in_progress" ];do
+sleep 5
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+done
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a -p kiddin9 -f
 ./scripts/feeds install -a
-cd feeds/kiddin9; git pull; cd -
+
+rm -rf feeds/packages/lang/golang
+svn export https://github.com/coolsnowwolf/packages/trunk/lang/golang feeds/packages/lang/golang
 
 sed -i 's/\(page\|e\)\?.acl_depends.*\?}//' `find package/feeds/kiddin9/luci-*/luasrc/controller/* -name "*.lua"`
 # sed -i 's/\/cgi-bin\/\(luci\|cgi-\)/\/\1/g' `find package/feeds/kiddin9/luci-*/ -name "*.lua" -or -name "*.htm*" -or -name "*.js"` &
