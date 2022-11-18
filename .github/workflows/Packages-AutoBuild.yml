@@ -189,7 +189,7 @@ jobs:
         mv -f feeds/packages/lang feeds/packages/lang.b
         mv -f feeds/packages feeds/packages.b
         mkdir package/feeds/kiddin9
-        cp -rf kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qtbase,qttools,rblibtorrent,openssl} package/feeds/kiddin9/
+        cp -rf kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qtbase,qttools,rblibtorrent,openssl,ppp} package/feeds/kiddin9/
 
     - name: Compile the firmware
       run: |
