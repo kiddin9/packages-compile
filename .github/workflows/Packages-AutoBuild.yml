@@ -217,10 +217,10 @@ jobs:
             if [[ "$fpkg" && ! "$during" ]]; then
               comp
             else
-              gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')"
+              gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
               if [ ! "$gitdate" ]; then
                 echo "REPO_TOKEN=${{ secrets.REPO_TOKEN2 }}" >> $GITHUB_ENV
-                gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')"
+                gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
               fi
               if [ "$gitdate" != null ]; then
                 gitdate=$(date -d "$gitdate" +%s)
