@@ -222,6 +222,13 @@ jobs:
               if [ ! "$gitdate" ]; then
                 REPO_TOKEN="${{ secrets.REPO_TOKE2 }}"
                 echo "REPO_TOKEN=${{ secrets.REPO_TOKEN2 }}" >> $GITHUB_ENV
+                echo "use REPO_TOKEN2"
+                gitdate="$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
+              fi
+              if [ ! "$gitdate" ]; then
+                REPO_TOKEN="${{ secrets.REPO_TOKE3 }}"
+                echo "REPO_TOKEN=${{ secrets.REPO_TOKEN3 }}" >> $GITHUB_ENV
+                echo "use REPO_TOKEN3"
                 gitdate="$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
               fi
               if [ "$gitdate" != null ]; then
