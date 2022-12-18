@@ -65,6 +65,8 @@ jobs:
         echo "UPLOAD_FIRMWARE_TO_COWTRANSFER=${UPLOAD_FIRMWARE_TO_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
         sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
+        REPO_TOKEN=("${{ secrets.REPO_TOKEN }}" "${{ secrets.REPO_TOKEN2 }} "${{ secrets.REPO_TOKEN3 }}")
+        echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}]]}" >> $GITHUB_ENV
 
     - name: Trigger Packages Update
       run: |
@@ -212,25 +214,12 @@ jobs:
               rm -rf package/feeds/kiddin9/$ipk
              fi
             }
-          REPO_TOKEN="${{ secrets.REPO_TOKEN }}"
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
             echo $ipk
             if [[ "$fpkg" && ! "$during" ]]; then
               comp
             else
-              gitdate="$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
-              if [ ! "$gitdate" ]; then
-                REPO_TOKEN="${{ secrets.REPO_TOKE2 }}"
-                echo "REPO_TOKEN=${{ secrets.REPO_TOKEN2 }}" >> $GITHUB_ENV
-                echo "use REPO_TOKEN2:$REPO_TOKEN"
-                gitdate="$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN2 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
-              fi
-              if [ ! "$gitdate" ]; then
-                REPO_TOKEN="${{ secrets.REPO_TOKE3 }}"
-                echo "REPO_TOKEN=${{ secrets.REPO_TOKEN3 }}" >> $GITHUB_ENV
-                echo "use REPO_TOKEN3:$REPO_TOKEN"
-                gitdate="$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN3 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
-              fi
+              gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
               if [ "$gitdate" != null ]; then
                 gitdate=$(date -d "$gitdate" +%s)
                 now=$(date -d "$(date)" +%s)
