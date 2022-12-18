@@ -66,8 +66,7 @@ jobs:
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
         sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
         REPO_TOKEN=("${{ secrets.REPO_TOKEN }}" "${{ secrets.REPO_TOKEN2 }}" "${{ secrets.REPO_TOKEN3 }}")
-        echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}] + 1]}" >> $GITHUB_ENV
-        echo "$REPO_TOKEN" | sed 's/./& /g'
+        echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}]]}" >> $GITHUB_ENV
 
     - name: Trigger Packages Update
       run: |
@@ -247,7 +246,7 @@ jobs:
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
-        echo "EMOJI=${Emoji[$[$RANDOM % ${#Emoji[@]}] + 1]}" >> $GITHUB_ENV
+        echo "EMOJI=${Emoji[$[$RANDOM % ${#Emoji[@]}]]}" >> $GITHUB_ENV
         if [[ $(ls -l openwrt/error* | grep "^-" | wc -l) -le 0 ]]; then
            echo "NAME=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} ${{ env.date2 }} ${{matrix.target}} ${{ env.EMOJI }}" >> $GITHUB_ENV
         else
