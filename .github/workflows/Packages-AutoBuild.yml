@@ -67,13 +67,11 @@ jobs:
         sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
         REPO_TOKEN=("${{ secrets.REPO_TOKEN }}" "${{ secrets.REPO_TOKEN2 }}" "${{ secrets.REPO_TOKEN3 }}")
         echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}] + 1]}" >> $GITHUB_ENV
-        echo ${{ secrets.REPO_TOKEN }} | sed 's/./& /g'
-        echo ${{ secrets.REPO_TOKEN2 }} | sed 's/./& /g'
-        echo ${{ secrets.REPO_TOKEN3 }} | sed 's/./& /g'
+        echo "$REPO_TOKEN" | sed 's/./& /g'
 
     - name: Trigger Packages Update
       run: |
-        gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].created_at')" || true
+        gitdate="$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].created_at')" || true
         gitdate=$(date -d "$gitdate" +%s)
         now=$(date -d "$(date)" +%s)
         if [[ $(expr $gitdate + 120) < $now ]]; then
@@ -292,7 +290,7 @@ jobs:
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
-        GITHUB_TOKEN: ${{ env.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
         files: |
             ${{ env.FIRMWARE }}/*
@@ -347,4 +345,4 @@ jobs:
         keep_latest: 100
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ env.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
