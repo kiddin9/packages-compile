@@ -66,7 +66,7 @@ jobs:
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
         sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
         REPO_TOKEN=("${{ secrets.REPO_TOKEN }}" "${{ secrets.REPO_TOKEN2 }} "${{ secrets.REPO_TOKEN3 }}")
-        echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}]]}" >> $GITHUB_ENV
+        echo "REPO_TOKEN=${REPO_TOKEN[$[$RANDOM % ${#REPO_TOKEN[@]}] + 1]}" >> $GITHUB_ENV
 
     - name: Trigger Packages Update
       run: |
