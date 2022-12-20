@@ -318,7 +318,7 @@ jobs:
         SOURCE: "packages/"
         REMOTE_HOST: op.supes.top
         REMOTE_USER: root
-        REMOTE_PORT: 223
+        REMOTE_PORT: '223'
         TARGET: "/www/wwwroot/op.supes.top/packages/${{matrix.target}}/"
 
     - name: remote ssh command
