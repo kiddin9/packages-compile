@@ -327,7 +327,7 @@ jobs:
       with:
         host: op.supes.top
         username: root
-        REMOTE_PORT: '223'
+        port: 223
         key: ${{ env.SSH_PRIVATE_KEY }}
         script: |
           # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
