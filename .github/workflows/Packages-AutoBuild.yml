@@ -229,7 +229,7 @@ jobs:
                 [ "$during" ] || during="1.05"
                 durings=`echo "$during*60*60*24" | bc`
                 if [[ $(($gitdate + ${durings%.*})) -gt $now ]]; then
-                  echo "$((($now - $gitdate)/60/60))"
+                  echo "$((($now - $gitdate)/60/60))" || true
                   comp
                 fi
               fi
