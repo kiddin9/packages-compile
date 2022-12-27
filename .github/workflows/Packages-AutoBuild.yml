@@ -319,7 +319,7 @@ jobs:
         REMOTE_HOST: op.supes.top
         REMOTE_USER: root
         REMOTE_PORT: '223'
-        TARGET: "/www/wwwroot/op.supes.top/packages/${{matrix.target}}/"
+        TARGET: "/www/wwwroot/op.supes.top/packages/${{matrix.target}}/tmp/"
 
     - name: remote ssh command
       uses: appleboy/ssh-action@master
