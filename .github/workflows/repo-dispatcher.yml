@@ -36,7 +36,7 @@ jobs:
       uses: styfle/cancel-workflow-action@main
       if: contains(${{ github.event.inputs.packages }}, 'cw')
       with:
-        workflow_id: Packages-AutoBuild.yml
+        workflow_id: all
         access_token: ${{ github.token }}
     
     - name: Trigger matrix Update
