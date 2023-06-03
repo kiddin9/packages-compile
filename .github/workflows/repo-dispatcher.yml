@@ -16,42 +16,127 @@ on:
     - cron: 30 15 * * *
   watch:
     types: started
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Packages'
+        required: false
+        default: ''
 
 env:
-  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN_kiddin9 }}
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: Ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
+    runs-on: Ubuntu-22.04
     steps:
     - name: cancel running workflows
       uses: styfle/cancel-workflow-action@main
+      if: contains(github.event.inputs.packages, ' cw')
       with:
-        workflow_id: 4439874
+        workflow_id: all
         access_token: ${{ github.token }}
-
+    
     - name: Trigger matrix Update
       run: |
-        gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?&per_page=1" | jq -r '.[0].commit.committer.date')
+        gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?&per_page=1" | jq -r '.[0].commit.committer.date') || true
+        fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|i386_pentium4\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+        during="$(echo "${{github.event.inputs.packages}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
+        [[ "$fpkg" && ! "$during" ]] || {
+          [ "$during" ] || during="1.05"
+          durings=`echo "$during*60*60*24" | bc`
+          gitdate=$(date -d "$gitdate" +%s)
+          now=$(date -d "$(date)" +%s)
+          [ "$during" ] || during="1.05"
+          durings=`echo "$during*60*60*24" | bc`
+          if [[ $(expr $gitdate + ${durings%.*}) -lt $now ]]; then
+            exit;
+          fi
+        gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].created_at') || true
         gitdate=$(date -d "$gitdate" +%s)
-        now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
-        if [[ $(expr $gitdate + 90000) < $now ]]; then
-          exit;
+        now=$(date -d "$(date)" +%s)
+        if [[ $(expr $gitdate + 180) < $now ]]; then
+        curl -X POST https://api.github.com/repos/kiddin9/openwrt-packages/dispatches \
+        -H "Accept: application/vnd.github.everest-preview+json" \
+        -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+        --data '{"event_type": "update"}'
         fi
-        curl \
-        -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
-        -H "Accept: application/vnd.github.everest-preview+json" \
-        -H "Authorization: token ${{ secrets.REPO_TOKEN }}" \
-        -d '{"event_type": "x86_64 ${{ env.SSH }}", "client_payload": {"target": "x86_64"}}'
-        curl \
-        -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
-        -H "Accept: application/vnd.github.everest-preview+json" \
-        -H "Authorization: token ${{ secrets.REPO_TOKEN }}" \
-        -d '{"event_type": "aarch64 ${{ env.SSH }}", "client_payload": {"target": "nanopi-r2s"}}'
-        curl \
-         -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
-         -H "Accept: application/vnd.github.everest-preview+json" \
-         -H "Authorization: token ${{ secrets.REPO_TOKEN }}" \
-         -d '{"event_type": "aarch64_cortex-a72 ${{ env.SSH }}", "client_payload": {"target": "Rpi-4B"}}'
+        }
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "x86_64 ${{ github.event.inputs.packages }}", "client_payload": {"target": "x86_64"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "i386_pentium4 ${{ github.event.inputs.packages }}", "client_payload": {"target": "i386_pentium4"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "aarch64_generic ${{ github.event.inputs.packages }}", "client_payload": {"target": "aarch64_generic"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_arm1176jzf-s_vfp ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_arm1176jzf-s_vfp"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a5_vfpv4 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a5_vfpv4"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "aarch64_cortex-a72 ${{ github.event.inputs.packages }}", "client_payload": {"target": "aarch64_cortex-a72"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "aarch64_cortex-a53 ${{ github.event.inputs.packages }}", "client_payload": {"target": "aarch64_cortex-a53"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "mipsel_24kc ${{ github.event.inputs.packages }}", "client_payload": {"target": "mipsel_24kc"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "mips_24kc ${{ github.event.inputs.packages }}", "client_payload": {"target": "mips_24kc"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a7_neon-vfpv4 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a7_neon-vfpv4"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a7 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a7"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a9 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a9"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a9_vfpv3-d16 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a9_vfpv3-d16"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_cortex-a15_neon-vfpv4 ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_cortex-a15_neon-vfpv4"}}'
+          curl \
+          -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: token ${{ env.REPO_TOKEN }}" \
+          -d '{"event_type": "arm_xscale ${{ github.event.inputs.packages }}", "client_payload": {"target": "arm_xscale"}}'
+       
