@@ -57,9 +57,9 @@ jobs:
         echo "UPLOAD_FIRMWARE_TO_COWTRANSFER=${UPLOAD_FIRMWARE_TO_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
         if [[ "${{matrix.target}}" == arm_* ]]; then
-          echo "REPO_TOKEN=${{ secrets.REPO_TOKEN }}" >> $GITHUB_ENV
+          echo "REPO_TOKEN=${{ secrets.kkkidding }}" >> $GITHUB_ENV
         else
-          echo "REPO_TOKEN=${{ secrets.REPO_TOKEN2 }}" >> $GITHUB_ENV
+          echo "REPO_TOKEN=${{ secrets.kkkkiddin }}" >> $GITHUB_ENV
         fi
         sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
 
@@ -71,7 +71,7 @@ jobs:
         if [[ $(expr $gitdate + 120) < $now ]]; then
         curl -X POST https://api.github.com/repos/kiddin9/openwrt-packages/dispatches \
         -H "Accept: application/vnd.github.everest-preview+json" \
-        -H "Authorization: token ${{ secrets.REPO_TOKEN_kiddin9 }}" \
+        -H "Authorization: token ${{ env.REPO_TOKEN }}" \
         --data '{"event_type": "update"}'
         fi
 
@@ -182,10 +182,10 @@ jobs:
 
     - name: Prepare
       run: |
-        status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN_kiddin9 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
         while [ "$status" == "in_progress" ];do
           sleep 5
-          status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN_kiddin9 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+          status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
         done
         cd openwrt
         make defconfig
@@ -298,7 +298,7 @@ jobs:
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN_kiddin9 }}
+        GITHUB_TOKEN: ${{ env.REPO_TOKEN }}
       with:
         files: |
             ${{ env.FIRMWARE }}/*
