@@ -24,7 +24,7 @@ on:
         default: ''
 
 env:
-  REPO_TOKEN: ${{ secrets.REPO_TOKEN_kiddin9 }}
+  REPO_TOKEN: ${{ secrets.TOKEN_kiddin9 }}
   TZ: Asia/Shanghai
 
 jobs:
