@@ -301,7 +301,7 @@ jobs:
         GITHUB_TOKEN: ${{ env.REPO_TOKEN }}
       with:
         files: |
-            ${{ env.FIRMWARE }}/*
+            packages/*
             openwrt/error*.log
         name: ${{ env.NAME }}
         tag_name: ${{ env.date }}_${{matrix.target}}
@@ -325,7 +325,7 @@ jobs:
       if: env.UPLOAD_FIRMWARE_FOR_ARTIFACT == 'true'
       with:
         name: ${{ env.date3 }} ${{matrix.target}}
-        path: ${{ env.FIRMWARE }}
+        path: packages
 
     - name: remote ssh command
       uses: appleboy/ssh-action@master
