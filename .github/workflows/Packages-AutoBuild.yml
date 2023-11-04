@@ -291,7 +291,7 @@ jobs:
       continue-on-error: true
       run: |
         echo -e "墙内加速下载 🚀:\n" >> release.txt
-        echo -e "[腾讯云] (https://op.supes.top/packages/${{matrix.target}}/ ☁)\n" >> release.txt
+        echo -e "[腾讯云] (https://dl.openwrt.ai/packages/${{matrix.target}}/ ☁)\n" >> release.txt
         [ ${{ env.WETRANS }} ] && echo -e "[WeTransfer] (${{ env.WETRANS }} 🗽)\n" >> release.txt
         [ ${{ env.COWURL }} ] && echo -e "[奶牛上传] (${{ env.COWURL }} 🐮)\n" >> release.txt
         [ ${{ env.NOTICE }} ] && echo -e "${{ env.NOTICE }}" >> release.txt || true
@@ -320,7 +320,7 @@ jobs:
         REMOTE_HOST: ${{ secrets.SERVER_HOST }}
         REMOTE_USER: root
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
-        TARGET: "/www/wwwroot/op.supes.top/23.05/packages/${{matrix.target}}/kiddin9/"
+        TARGET: "/www/wwwroot/dl.openwrt.ai/23.05/packages/${{matrix.target}}/kiddin9/"
 
     - name: Upload packages for artifact
       uses: actions/upload-artifact@main
@@ -339,6 +339,6 @@ jobs:
         port: ${{ secrets.SERVER_PORT }}
         key: ${{ env.SSH_PRIVATE_KEY }}
         script: |
-          # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
-          # cp -R /www/wwwroot/op.supes.top/packages/keep/${{matrix.target}}/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
+          # cp -R /www/wwwroot/dl.openwrt.ai/packages/keep/common/* /www/wwwroot/dl.openwrt.ai/packages/${{matrix.target}}/
+          # cp -R /www/wwwroot/dl.openwrt.ai/packages/keep/${{matrix.target}}/* /www/wwwroot/dl.openwrt.ai/packages/${{matrix.target}}/
           bash opkg ${{matrix.target}} &
