@@ -46,12 +46,12 @@ sed -i \
 	package/feeds/kiddin9/*/Makefile
 
 cp -f devices/common/.config .config
-mv feeds/base feeds/base.bak
-mv feeds/packages feeds/packages.bak
+mv -f feeds/base feeds/base.bak
+mv -f feeds/packages feeds/packages.bak
 make defconfig
 rm -Rf tmp
-mv feeds/base.bak feeds/base
-mv feeds/packages.bak feeds/packages
+mv -f feeds/base.bak feeds/base
+mv -f feeds/packages.bak feeds/packages
 sed -i 's/CONFIG_ALL=y/CONFIG_ALL=n/' .config
 sed -i '/PACKAGE_kmod-/d' .config
 
