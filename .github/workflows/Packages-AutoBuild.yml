@@ -131,6 +131,8 @@ jobs:
             curl -fL -m 500 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm53xx/generic/openwrt-sdk-$REPO_BRANCH-bcm53xx-generic_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz || curl -fL -m 500 -o sdk.tar.xz https://downloads.cdn.openwrt.org/releases/$REPO_BRANCH/targets/bcm53xx/generic/openwrt-sdk-$REPO_BRANCH-bcm53xx-generic_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "arm_cortex-a9_vfpv3-d16" ]]; then
             curl -fL -m 500 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/mvebu/cortexa9/openwrt-sdk-$REPO_BRANCH-mvebu-cortexa9_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz || curl -fL -m 500 -o sdk.tar.xz https://downloads.cdn.openwrt.org/releases/$REPO_BRANCH/targets/mvebu/cortexa9/openwrt-sdk-$REPO_BRANCH-mvebu-cortexa9_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "aarch64_cortex-a76" ]]; then
+            curl -fL -m 500 -o sdk.tar.xz https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2712/openwrt-sdk-bcm27xx-bcm2712_gcc-13.2.0_musl.Linux-x86_64.tar.xz || curl -fL -m 500 -o sdk.tar.xz https://downloads.cdn.openwrt.org/snapshots/targets/bcm27xx/bcm2712/openwrt-sdk-bcm27xx-bcm2712_gcc-13.2.0_musl.Linux-x86_64.tar.xz
         fi
 
     - name: Free up disk space
