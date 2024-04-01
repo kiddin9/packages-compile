@@ -136,7 +136,6 @@ jobs:
         fi
 
     - name: Free up disk space
-      if: env.FREE_UP_DISK == 'true'
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -144,6 +143,7 @@ jobs:
         ln -sf /mnt/openwrt/dl openwrt/dl
         ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sf /mnt/openwrt/build_dir openwrt/build_dir
+        df -hT
     
     - name: Load custom configuration
       run: |
