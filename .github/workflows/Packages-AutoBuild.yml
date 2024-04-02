@@ -150,8 +150,8 @@ jobs:
         rm -Rf sdk.tar.xz
         cd openwrt
         cp -rf ./openwrt-sdk*/. ./ || true
-        cp -rf ./openwrt-sdk*/build_dir/. ./build_dir/
-        cp -rf ./openwrt-sdk*/staging_dir/. ./staging_dir/
+        cp -rf ./openwrt-sdk*/build_dir/. ./build_dir/ || true
+        cp -rf ./openwrt-sdk*/staging_dir/. ./staging_dir/ || true
         cp -rf ../devices ./
         cp -rf devices/common/. ./
         cp -rf devices/${{matrix.target}}/. ./
