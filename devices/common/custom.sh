@@ -3,6 +3,9 @@
 shopt -s extglob
 rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,firewall,dnsmasq}
 
+rm -rf feeds/packages/lang/golang
+mv -f feeds/kiddin9/golang feeds/packages/lang/
+
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
 	[[ "$(grep "KernelPackage" "$ipk/Makefile")" && ! "$(grep "BuildPackage" "$ipk/Makefile")" ]] && rm -rf $ipk || true
