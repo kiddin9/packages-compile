@@ -146,7 +146,6 @@ jobs:
     
     - name: Load custom configuration
       run: |
-        tar -xJf sdk.tar.xz -C openwrt
         tar -I 'xz -7e -T0' -cf sdk.tar.xz openwrt || tar -I 'zstd -T0 --ultra -20' -cf sdk.tar.zst openwrt
         rm -Rf sdk.tar.xz
         cd openwrt
