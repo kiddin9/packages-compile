@@ -11,6 +11,9 @@
  endmenu
  
  menu "Advanced configuration options (for developers)"
+
+--- a/Config-build.in
++++ b/Config-build.in
 @@ -1064,7 +1064,7 @@
  
  config KERNEL_XDP_SOCKETS
