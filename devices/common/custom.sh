@@ -51,7 +51,7 @@ cp -f devices/common/.config .config
 mv -f feeds/base feeds/base.bak
 mv -f feeds/packages feeds/packages.bak
 make defconfig
-rm -Rf tmp feeds/base
+rm -Rf feeds/base
 mv -f feeds/base.bak feeds/base
 mv -f feeds/packages.bak feeds/packages
 sed -i 's/CONFIG_ALL=y/CONFIG_ALL=n/' .config
