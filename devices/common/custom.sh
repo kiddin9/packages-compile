@@ -3,7 +3,7 @@
 shopt -s extglob
 rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,firewall,dnsmasq}
 
-curl -sfL https://raw.githubusercontent.com/sbwml/packages_lang_golang/22.x/golang/Makefile -o feeds/packages/lang/Makefile
+curl -sfL https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -o feeds/packages/lang/golang/golang/Makefile
 
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
