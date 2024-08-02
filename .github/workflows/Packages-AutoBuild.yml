@@ -149,7 +149,7 @@ jobs:
         tar -xJf sdk.tar.xz -C openwrt || tar -xf sdk.tar.zst -C openwrt
         rm -Rf sdk.tar.xz
         cd openwrt
-        cp -rf ./openwrt-sdk*/. ./ || true
+        cp -rf ./openwrt-sdk*/. ./ 2>/dev/null || true
         cp -rf ./openwrt-sdk*/build_dir/. ./build_dir/ || true
         cp -rf ./openwrt-sdk*/staging_dir/. ./staging_dir/ || true
         cp -rf ../devices ./
