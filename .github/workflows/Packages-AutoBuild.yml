@@ -65,7 +65,7 @@ jobs:
 
     - name: Trigger Packages Update
       run: |
-        gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].created_at')" || true
+        gitdate="$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || gitdate="$(curl -H "Authorization: token ${{ secrets.TOKEN_KIDDIN9 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')" || true
         gitdate="$(date -d "$gitdate" +%s)" || true
         now="$(date -d "$(date)" +%s)"
         if [[ $(expr $gitdate + 120) < $now ]]; then
