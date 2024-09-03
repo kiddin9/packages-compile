@@ -37,7 +37,7 @@ jobs:
       if: contains(github.event.inputs.packages, ' cw')
       with:
         workflow_id: all
-        access_token: ${{ github.token }}
+        access_token: ${{ secrets.TOKEN_KIDDIN9 }}
     
     - name: Trigger matrix Update
       run: |
