@@ -255,7 +255,7 @@ jobs:
                   break
                 fi
               done
-              if [ "$success" != success ]; then
+              if [ "$success" != true ]; then
                   echo "Failed to get commit date with any token"
                   exit 1
               fi
