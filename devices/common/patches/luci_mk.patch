@@ -1,0 +1,35 @@
+--- a/feeds/luci/luci.mk
++++ b/feeds/luci/luci.mk
+@@ -84,7 +84,7 @@ define findrev
+       set -- $$(git log -1 --format="%ct %h" --abbrev=7 -- $(if $(1),. ':(exclude)po',po)); \
+       if [ -n "$$1" ]; then
+         secs="$$(($$1 % 86400))"; \
+-        yday="$$(date --utc --date="@$$1" "+%y.%j")"; \
++        yday="$$(date --utc --date="@$$(($$1 + 365*24*60*60))" "+%y.%j")"; \
+         printf '%s.%05d~%s' "$$yday" "$$secs" "$$2"; \
+       else \
+         echo "0"; \
+@@ -220,6 +220,16 @@ define Package/$(PKG_NAME)/install
+ 	$(call Build/Install/Default)
+ 	$(CP) $(PKG_INSTALL_DIR)/* $(1)/
+  endif
++ ifneq ($(wildcard ${CURDIR}/po),)
++	$(INSTALL_DIR) $(1)/etc/uci-defaults
++	echo "uci set luci.languages.zh_cn='$(LUCI_LANG.zh_Hans)'; uci commit luci" \
++		> $(1)/etc/uci-defaults/luci-i18n-$(LUCI_BASENAME)-zh-cn
++	$(INSTALL_DIR) $(1)$(LUCI_LIBRARYDIR)/i18n
++	$(foreach po,$(wildcard ${CURDIR}/po/zh_Hans/*.po), \
++		po2lmo $(po) \
++			$(1)$(LUCI_LIBRARYDIR)/i18n/$(basename $(notdir $(po))).zh-cn.lmo;)
++ endif
++
+ endef
+ 
+ ifndef Package/$(PKG_NAME)/postinst
+@@ -345,5 +355,5 @@ define LuciTranslation
+ 
+ endef
+ 
+-$(foreach lang,$(LUCI_LANGUAGES),$(if $(LUCI_LANG.$(lang)),$(eval $(call LuciTranslation,$(firstword $(LUCI_LC_ALIAS.$(lang)) $(lang)),$(lang)))))
++# $(foreach lang,$(LUCI_LANGUAGES),$(if $(LUCI_LANG.$(lang)),$(eval $(call LuciTranslation,$(firstword $(LUCI_LC_ALIAS.$(lang)) $(lang)),$(lang)))))
+ $(foreach pkg,$(LUCI_BUILD_PACKAGES),$(eval $(call BuildPackage,$(pkg))))

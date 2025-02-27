@@ -1,57 +1,58 @@
 #!/bin/bash
 
 shopt -s extglob
+rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,luci-app-package-manager,\
+dnsmasq,firewall*,wifi-scripts,opkg,ppp,curl,luci-app-firewall,\
+nftables,fstools,wireless-regdb,libnftnl}
 
-sed -i '/	refresh_config();/d' scripts/feeds
+curl -sfL https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -o feeds/packages/lang/golang/golang/Makefile
 
-rm -rf feeds/custom/{frp,xray-core,.github,diy,mt-drivers,miniupnpd,mt7601u-ap,openwrt-fullconenat,mtk-eip93,rtl8*,r81*,shortcut-fe,mtk_apcli,fast-classifier,luci-app-mtwifi,oaf,ntfs3,natflow,.gitignore,LICENSE,README.md}
+for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
+do
+	[[ "$(grep "KernelPackage" "$ipk/Makefile")" && ! "$(grep "BuildPackage" "$ipk/Makefile")" ]] && rm -rf $ipk || true
+done
 
-rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs}
+#<<'COMMENT'
+rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
-# rm -rf feeds/packages/libs/!(libev|c-ares|cjson|boost|lib*|expat|tiff|freetype|udns|pcre2)
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
-rm -Rf feeds/packages/multimedia/!(gstreamer1)
-rm -Rf feeds/packages/utils/!(pcsc-lite|xz)
+rm -Rf feeds/packages/multimedia/!(gstreamer1|ffmpeg)
 rm -Rf feeds/packages/net/!(mosquitto|curl)
-rm -Rf feeds/packages/lang/!(python|golang|node|node-yarn)
-rm -Rf feeds/base/package/{kernel,firmware}
-rm -Rf feeds/base/package/network/!(services)
+rm -Rf feeds/base/package/firmware
+rm -Rf feeds/base/package/network/!(services|utils)
 rm -Rf feeds/base/package/network/services/!(ppp)
-rm -Rf feeds/base/package/utils/!(util-linux|lua)
-rm -Rf feeds/base/package/system/!(opkg|ubus|uci)
-rm -Rf feeds/custom/luci-app-*/po/!(zh_Hans)
+rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
+rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
+#COMMENT
+
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+while [[ "$status" == "in_progress" || "$status" == "queued" ]];do
+echo "wait 5s"
+sleep 5
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+done
 
 ./scripts/feeds update -a
+./scripts/feeds install -a -p kiddin9 -f
 ./scripts/feeds install -a
 
-sed -i 's/Os/O2/g' include/target.mk
-#rm -rf ./feeds/packages/lang/golang
-#svn co https://github.com/immortalwrt/packages/trunk/lang/golang feeds/packages/lang/golang
-sed -i "s/+nginx\( \|$\)/+nginx-ssl\1/g"  package/feeds/custom/*/Makefile
-sed -i 's/+python\( \|$\)/+python3/g' package/feeds/custom/*/Makefile
-sed -i 's?../../lang?$(TOPDIR)/feeds/packages/lang?g' package/feeds/custom/*/Makefile
-for ipk in $(find package/feeds/custom/* -maxdepth 0); do	
-	if [[ ! -d "$ipk/patches" && ! "$(grep "codeload.github.com" $ipk/Makefile)" ]]; then
-		find $ipk/ -maxdepth 1 -name "Makefile" ! -path *tcping* ! -path *rblibtorrent* ! -path *n2n_v2* \
-		| xargs -i sed -i "s/PKG_SOURCE_VERSION:=[0-9a-z]\{15,\}/PKG_SOURCE_VERSION:=HEAD/g" {}
-	fi
-done
-sed -i 's/$(VERSION) &&/$(VERSION) ;/g' include/download.mk
+rm -rf package/feeds/kiddin9/luci-app-quickstart/root/usr/share/luci/menu.d/luci-app-quickstart.json
 
-mv feeds/base feeds/base.bak
-mv feeds/packages feeds/packages.bak
-make defconfig
-rm -Rf tmp
-mv feeds/base.bak feeds/base
-mv feeds/packages.bak feeds/packages
-sed -i 's/CONFIG_ALL=y/CONFIG_ALL=n/' .config
+sed -i 's/\(page\|e\)\?.acl_depends.*\?}//' `find package/feeds/kiddin9/luci-*/luasrc/controller/* -name "*.lua"`
+# sed -i 's/\/cgi-bin\/\(luci\|cgi-\)/\/\1/g' `find package/feeds/kiddin9/luci-*/ -name "*.lua" -or -name "*.htm*" -or -name "*.js"` &
 
-cp -f devices/common/po2lmo staging_dir/host/bin/po2lmo
-chmod +x staging_dir/host/bin/po2lmo
+sed -i \
+	-e "s/+\(luci\|luci-ssl\|uhttpd\)\( \|$\)/\2/" \
+	-e "s/+nginx\( \|$\)/+nginx-ssl\1/" \
+	-e 's/+python\( \|$\)/+python3/' \
+	-e 's?../../lang?$(TOPDIR)/feeds/packages/lang?' \
+	-e 's,$(STAGING_DIR_HOST)/bin/upx,upx,' \
+	package/feeds/kiddin9/*/Makefile
 
-sed -i 's,$(STAGING_DIR_HOST)/bin/upx,upx,' package/feeds/custom/*/Makefile
-
-sed -i "/mediaurlbase/d" package/feeds/*/luci-theme*/root/etc/uci-defaults/*
+cp -f devices/common/.config .config
 
 sed -i '/WARNING: Makefile/d' scripts/package-metadata.pl
 
+
+cp -f devices/common/po2lmo staging_dir/host/bin/po2lmo
+chmod +x staging_dir/host/bin/po2lmo
