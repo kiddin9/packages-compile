@@ -40,6 +40,7 @@ jobs:
         access_token: ${{ secrets.TOKEN_KIDDIN9 }}
     
     - name: Trigger matrix Update
+      if: contains(github.event.inputs.packages, ' cw')
       run: |
         gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/kwrt-packages/commits?&per_page=1" | jq -r '.[0].commit.committer.date') || true
         fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|i386_pentium4\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
@@ -140,8 +141,8 @@ jobs:
       continue-on-error: true
       with:
         delete_releases: true
-        releases_keep_latest: 100
-        delete_tags: true
+        releases_keep_latest: 9999
+        delete_tags: false
         delete_workflows: true
         workflows_keep_day: 100
         gh_token: ${{ secrets.TOKEN_KIDDIN9 }}
