@@ -141,7 +141,7 @@ jobs:
       continue-on-error: true
       with:
         delete_releases: true
-        releases_keep_latest: 1000
+        releases_keep_latest: 100
         delete_tags: false
         delete_workflows: false
         workflows_keep_day: 100
