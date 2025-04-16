@@ -136,20 +136,14 @@ jobs:
           -H "Authorization: token ${{ env.REPO_TOKEN }}" \
           -d '{"event_type": "aarch64_cortex-a76 ${{ github.event.inputs.packages }}", "client_payload": {"target": "aarch64_cortex-a76"}}'
 
-    - name: Delete workflow runs
-      uses: GitRML/delete-workflow-runs@main
-      continue-on-error: true
-      with:
-        token: ${{ secrets.TOKEN_KIDDIN9 }}
-        retain_days: 20
-        keep_minimum_runs: 1
-
     - name: Remove old Releases
+      uses: ophub/delete-releases-workflows@main
       continue-on-error: true
-      if: env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 100
+        delete_releases: true
+        releases_keep_latest: 80
         delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN_KIDDIN9 }}
+        delete_workflows: true
+        workflows_keep_day: 80
+        gh_token: ${{ secrets.TOKEN_KIDDIN9 }}
        
