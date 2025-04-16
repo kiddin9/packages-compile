@@ -137,7 +137,7 @@ jobs:
           -d '{"event_type": "aarch64_cortex-a76 ${{ github.event.inputs.packages }}", "client_payload": {"target": "aarch64_cortex-a76"}}'
 
     - name: Remove old Releases
-      uses: ophub/delete-releases-workflows@main
+      uses: kiddin9/delete-releases-workflows@main
       continue-on-error: true
       with:
         delete_releases: true
