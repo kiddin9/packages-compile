@@ -230,7 +230,7 @@ jobs:
           function comp(){
              echo "compile $ipk"
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
-             if [[ $ipk != luci-* ]]; then
+             if [[ $ipk != aluci-* ]]; then
               mv -f feeds/packages.b feeds/packages
               mv feeds/packages/lang.b feeds/packages/lang
               [ "$(grep "PKG_BUILD_DEPENDS" package/feeds/kiddin9/$ipk/Makefile)" ] || mv feeds/packages/lang/node feeds/packages/lang/node.b
