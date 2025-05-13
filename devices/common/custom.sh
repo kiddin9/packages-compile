@@ -4,6 +4,7 @@ shopt -s extglob
 rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,luci-app-package-manager,\
 dnsmasq,firewall*,wifi-scripts,opkg,ppp,curl,luci-app-firewall,\
 nftables,fstools,wireless-regdb,libnftnl}
+rm -rf feeds/packages/libs/libcups
 
 curl -sfL https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -o feeds/packages/lang/golang/golang/Makefile
 
