@@ -1,0 +1,81 @@
+--- a/scripts/feeds
++++ b/scripts/feeds
+@@ -198,6 +198,37 @@ my %update_method = (
+ # src-git: pull broken
+ # src-cpy: broken if `basename $src` != $name
+ 
++my $MAX_RETRIES = 3;
++my $RETRY_DELAY = 2;
++
++# 检查是否是网络相关错误
++sub is_network_error($) {
++	my $error_msg = shift;
++	return ($error_msg =~ /RPC failed|GnuTLS.*error|TLS packet|unexpected disconnect|early EOF|Connection.*reset|Connection.*timed|resolve host|SSL.*error|certificate.*failed/i);
++}
++
++# 带重试的系统命令执行
++sub system_with_retry($) {
++	my $cmd = shift;
++	my $delay = $RETRY_DELAY;
++	
++	for my $attempt (1..$MAX_RETRIES) {
++		my $output = `$cmd 2>&1`;
++		my $exit_code = $? >> 8;
++		
++		return 0 if $exit_code == 0;  # 成功
++		
++		if ($attempt < $MAX_RETRIES && is_network_error($output)) {
++			warn "Network error detected (attempt $attempt/$MAX_RETRIES), retrying in ${delay}s...\n";
++			sleep($delay);
++			$delay = int($delay * 1.5);  # 指数退避
++		} else {
++			return $exit_code;
++		}
++	}
++	return 1;
++}
++
+ sub update_feed_via($$$$$$$) {
+ 	my $type = shift;
+ 	my $name = shift;
+@@ -216,13 +247,19 @@ sub update_feed_via($$$$$$$) {
+ 
+ 	if( $relocate || !$m->{'update'} || !-d "$localpath/$m->{'controldir'}" ) {
+ 		system("rm -rf '$safepath'");
++		
++		my $init_cmd;
+ 		if ($m->{'init_branch'} and $branch) {
+-			system(sprintf($m->{'init_branch'}, $branch, $base_branch, $safepath)) == 0 or return 1;
++			$init_cmd = sprintf($m->{'init_branch'}, $branch, $base_branch, $safepath);
+ 		} elsif ($m->{'init_commit'} and $commit) {
+-			system(sprintf($m->{'init_commit'}, $base_commit, $safepath, $safepath, $commit, $commit)) == 0 or return 1;
++			$init_cmd = sprintf($m->{'init_commit'}, $base_commit, $safepath, $safepath, $commit, $commit);
+ 		} else {
+-			system(sprintf($m->{'init'}, $src, $safepath)) == 0 or return 1;
++			$init_cmd = sprintf($m->{'init'}, $src, $safepath);
+ 		}
++		
++		# 使用重试机制
++		system_with_retry($init_cmd) == 0 or return 1;
++		
+ 	} elsif ($m->{'init_commit'} and $commit) {
+ 		# in case git hash has been provided don't update the feed
+ 	} else {
+@@ -236,11 +273,15 @@ sub update_feed_via($$$$$$$) {
+ 		if ($stash && exists $m->{'update_stash'}) {
+ 			$update_cmd = $m->{'update_stash'};
+ 		}
+-		system("cd '$safepath'; $update_cmd") == 0 or return 1;
++		
++		# 使用重试机制
++		system_with_retry("cd '$safepath'; $update_cmd") == 0 or return 1;
+ 	}
++	
+ 	if ($m->{'post_update'}) {
+ 		my $cmd = $m->{'post_update'};
+-		system("cd '$safepath'; $cmd") == 0 or return 1;
++		# 使用重试机制
++		system_with_retry("cd '$safepath'; $cmd") == 0 or return 1;
+ 	}
+ 
+ 	return 0;
