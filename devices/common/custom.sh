@@ -7,6 +7,7 @@ nftables,fstools,wireless-regdb,libnftnl,netdata}
 rm -rf feeds/packages/libs/libcups
 
 curl -sfL https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -o feeds/packages/lang/golang/golang/Makefile
+mv -f feeds/kiddin9/{lua-periphery,lua-neturl,lua-maxminddb,node-pnpm}  package/feeds/packages/
 
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
