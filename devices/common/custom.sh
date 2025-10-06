@@ -8,6 +8,7 @@ rm -rf feeds/packages/libs/libcups
 
 curl -sfL https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -o feeds/packages/lang/golang/golang/Makefile
 mv -f feeds/kiddin9/node-pnpm  feeds/packages/lang/
+mv -f feeds/kiddin9/{rust-bindgen,go-rice,gn}  feeds/packages/devel/
 
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
