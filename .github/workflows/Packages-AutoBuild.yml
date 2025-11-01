@@ -44,7 +44,7 @@ jobs:
 
     - name: Load Settings.ini
       run: |
-        source "${GITHUB_WORKSPACE}/devices/common/settings.ini"
+        source "${{ github.workspace }}/devices/common/settings.ini"
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
         echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
         echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
@@ -61,7 +61,7 @@ jobs:
         else
           echo "REPO_TOKEN=${{ secrets.TOKEN_KKKKIDDIN }}" >> $GITHUB_ENV
         fi
-        sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${GITHUB_WORKSPACE}/devices/common/custom.sh
+        sed -i "1a REPO_TOKEN=${{ env.REPO_TOKEN }}" ${{ github.workspace }}/devices/common/custom.sh
 
     - name: Free disk space
       uses: coder-xiaomo/free-disk-space@main
