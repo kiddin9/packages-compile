@@ -262,7 +262,7 @@ jobs:
                 now="$(date -d "$(date)" +%s)"
                 [ "$during" ] || during="1.05"
                 durings=`echo "$during*60*60*24" | bc`
-                if [[ $(($gitdate + ${durings%.*})) -gt $now && $ipk != luci-base && $ipk != luci-mod-* ]]; then
+                if [[ $(($gitdate + ${durings%.*})) -gt $now && $ipk != luci-base ]]; then
                   echo "$((($now - $gitdate)/60/60))" || true
                   echo "$ipk" >> ipk.txt
                 fi
