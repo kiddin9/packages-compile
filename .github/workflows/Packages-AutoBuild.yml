@@ -324,7 +324,7 @@ jobs:
         
     - name: Create release
       id: create_release
-      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
+      if: env.REPO_TOKEN &&  ! contains(github.event.action, 'a-')
       continue-on-error: true
       run: |
         echo -e "墙内加速下载 🚀:\n" >> release.txt
@@ -336,7 +336,7 @@ jobs:
     - name: Upload packages for release
       uses: softprops/action-gh-release@master
       continue-on-error: true
-      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
+      if: env.REPO_TOKEN && ! contains(github.event.action, 'a-')
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN_KIDDIN9 }}
       with:
