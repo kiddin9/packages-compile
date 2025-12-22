@@ -132,7 +132,7 @@ jobs:
         elif [[ "${{matrix.target}}" == "aarch64_cortex-a76" ]]; then
         	SDK_PATH="releases/$REPO_BRANCH/targets/bcm27xx/bcm2712/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2712_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
         elif [[ "${{matrix.target}}" == "riscv64_generic" ]]; then
-        	SDK_PATH="releases/$REPO_BRANCH/targets/bcm27xx/bcm2712/openwrt-sdk-$REPO_BRANCH-siflower-sf21_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
+        	SDK_PATH="releases/$REPO_BRANCH/targets/siflower/sf21/openwrt-sdk-$REPO_BRANCH-siflower-sf21_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
         fi
 
         PRIMARY_URL="https://downloads.openwrt.org/$SDK_PATH"
