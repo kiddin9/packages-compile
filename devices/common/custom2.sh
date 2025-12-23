@@ -6,6 +6,8 @@ sed -i "/telephony/d" feeds.conf.default
 
 sed -i -E "s#git\.openwrt\.org/(openwrt|feed|project)#github.com/openwrt#" feeds.conf.default
 
+sed -i '/	refresh_config();/d' scripts/feeds
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
