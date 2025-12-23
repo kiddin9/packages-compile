@@ -286,7 +286,8 @@ jobs:
       id: organize
       run: |
         mkdir packages
-        mv -f openwrt/bin/packages/*/kiddin9/* packages || true
+        [[ "$(echo "${{github.event.action}}" | grep "a-")" ]] ||
+          mv -f openwrt/bin/packages/*/kiddin9/* packages || true
         mv -f openwrt/.config packages/${{matrix.target}}.config || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         # cp -Rf openwrt/bin/packages/*/luci/luci-base* packages/ || true
@@ -338,6 +339,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN_KIDDIN9 }}
       with:
         files: |
+            packages/*
             openwrt/error*.log
         name: ${{ env.NAME }}
         tag_name: ${{ env.date }}_${{matrix.target}}
