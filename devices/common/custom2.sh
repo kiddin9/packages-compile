@@ -13,7 +13,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 
 rm -rf package/feeds/packages/{netdata,cloudreve,smartdns,vsftpd,p910nd,aria2,ariang,coremark,watchcat,dockerd,frp}
 
-rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers)
+rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers|mac80211)
 
 cp -f devices/common/.config .config
 
