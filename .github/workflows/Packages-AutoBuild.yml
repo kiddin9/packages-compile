@@ -285,13 +285,9 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        mkdir packages releasepkg
-        cp -rf openwrt/bin/packages/*/kiddin9/* packages/ || true
-        [[ "$(echo "${{github.event.action}}" | grep "a-")" ]] ||
-          mv -f openwrt/bin/packages/*/kiddin9/* releasepkg/ || true
-        mv -f openwrt/.config packages/${{matrix.target}}.config || true
-        # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
-        # cp -Rf openwrt/bin/packages/*/luci/luci-base* packages/ || true
+        mv -f openwrt/.config openwrt/bin/packages/*/kiddin9/ || true
+        echo "${{ github.event.action }}" | grep -qv "a-" && PACKAGES="openwrt/bin/packages/*/kiddin9/*"
+        echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         echo "EMOJI=${Emoji[$[$RANDOM % ${#Emoji[@]}]]}" >> $GITHUB_ENV
@@ -317,8 +313,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN_KIDDIN9 }}
       with:
         files: |
-            releasepkg/*
             openwrt/error*.log
+            ${{ env.PACKAGES }}
         name: ${{ env.NAME }}
         tag_name: ${{ env.date }}_${{matrix.target}}
         body_path: release.txt
@@ -330,7 +326,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ env.SSH_PRIVATE_KEY }}
         ARGS: "-avr --timeout=600"
         SSH_CMD_ARGS: "-o ServerAliveInterval=30 -o ServerAliveCountMax=10"
-        SOURCE: "packages/"
+        SOURCE: "openwrt/bin/packages/*/kiddin9/"
         REMOTE_HOST: ${{ secrets.SERVER_HOST }}
         REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
@@ -344,4 +340,4 @@ jobs:
       if: env.UPLOAD_FIRMWARE_FOR_ARTIFACT == 'true'
       with:
         name: ${{ env.date3 }} ${{matrix.target}}
-        path: packages
+        path: openwrt/bin/packages/*/kiddin9
