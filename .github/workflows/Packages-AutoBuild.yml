@@ -285,9 +285,10 @@ jobs:
     - name: Organize files
       id: organize
       run: |
-        mkdir packages
+        mkdir packages releasepkg
+        cp -rf openwrt/bin/packages/*/kiddin9/* packages/ || true
         [[ "$(echo "${{github.event.action}}" | grep "a-")" ]] ||
-          mv -f openwrt/bin/packages/*/kiddin9/* packages || true
+          mv -f openwrt/bin/packages/*/kiddin9/* releasepkg/ || true
         mv -f openwrt/.config packages/${{matrix.target}}.config || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         # cp -Rf openwrt/bin/packages/*/luci/luci-base* packages/ || true
@@ -299,26 +300,6 @@ jobs:
         else
            echo "NAME=❌ ${{ env.date2 }} ${{matrix.target}} ❌" >> $GITHUB_ENV
         fi
-
-    - name: Upload firmware to cowtransfer
-      if: env.UPLOAD_FIRMWARE_TO_COWTRANSFER == 'true'
-      continue-on-error: true
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        cowurl=$(./transfer cow --block 2621440 -s --no-progress ${FIRMWARE})
-        cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
-        echo "COWURL=$cowurl" >> $GITHUB_ENV
-        echo "Download Link: ${{ env.EMOJI }} $cowurl ${{ env.EMOJI }} 🚀"
- 
-    - name: Upload firmware to WeTransfer
-      if: env.UPLOAD_FIRMWARE_TO_WETRANSFER == 'true'
-      continue-on-error: true
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        wetrans=$(./transfer wet -s -p 16 --no-progress ${FIRMWARE})
-        wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
-        echo "WETRANS=$wetrans" >> $GITHUB_ENV
-        echo "Download Link: ${{ env.EMOJI }} $wetrans ${{ env.EMOJI }} 🚀"
         
     - name: Create release
       id: create_release
@@ -326,10 +307,7 @@ jobs:
       continue-on-error: true
       run: |
         echo -e "墙内加速下载 🚀:\n" >> release.txt
-        echo -e "[腾讯云] (https://dl.openwrt.ai/latest/packages/${{matrix.target}}/ ☁)\n" >> release.txt
-        [ ${{ env.WETRANS }} ] && echo -e "[WeTransfer] (${{ env.WETRANS }} 🗽)\n" >> release.txt
-        [ ${{ env.COWURL }} ] && echo -e "[奶牛上传] (${{ env.COWURL }} 🐮)\n" >> release.txt
-        [ ${{ env.NOTICE }} ] && echo -e "${{ env.NOTICE }}" >> release.txt || true
+        echo -e "https://dl.openwrt.ai/latest/packages/${{matrix.target}}/ ☁\n" >> release.txt
 
     - name: Upload packages for release
       uses: softprops/action-gh-release@master
@@ -339,7 +317,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.TOKEN_KIDDIN9 }}
       with:
         files: |
-            packages/*
+            releasepkg/*
             openwrt/error*.log
         name: ${{ env.NAME }}
         tag_name: ${{ env.date }}_${{matrix.target}}
