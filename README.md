@@ -8,6 +8,6 @@ luci-app 编译所有 luci-app 软件包
 
 luci-app-(aria2|acme) 编译 luci-app-aria2 和 luci-app-acme
 
-^[a-k]
+^[a-km]
 
-^[^a-k]
+^[^a-km]
