@@ -28,6 +28,7 @@ done
 rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
+rm -Rf feeds/packages/utils/i2c-tools
 rm -Rf feeds/packages/multimedia/!(gstreamer1)
 rm -Rf feeds/packages/net/!(mosquitto|curl|unbound)
 rm -Rf feeds/base_root/package/firmware
