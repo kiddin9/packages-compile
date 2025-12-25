@@ -231,14 +231,19 @@ jobs:
           function comp(){
              echo "compile $ipk"
              cp -rf kiddin9.b/$ipk* package/feeds/kiddin9/
-             [ "$(grep "PKG_BUILD_DEPENDS" package/feeds/kiddin9/$ipk/Makefile)" ] && mv -f feeds/packages/lang/node.b feeds/packages/lang/node 2>/dev/null || mv feeds/packages/lang/node feeds/packages/lang/node.b 2>/dev/null || true
              make -k package/$ipk/compile -j$(($(nproc)+1)) || (make -k package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true)
              rm -rf package/feeds/kiddin9/$ipk*
             }
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
             echo $ipk
             if [[ "$fpkg" && ! "$during" ]]; then
-              comp
+              if [ "$(echo "${{ github.event.action }}" | grep "lang")" ];then
+                [ "$(grep -E "(golang|node|rust|python)" package/feeds/kiddin9/$ipk/Makefile)" ] && comp
+              elif [ "$(echo "${{ github.event.action }}" | grep "all")" ];then
+                [ ! "$(grep -E "(golang|node|rust|python)" package/feeds/kiddin9/$ipk/Makefile)" ] && comp
+              else
+                comp
+              if
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
               for token in "$REPO_TOKEN" "${{ secrets.TOKEN_KIDDIN9 }}" "${{ secrets.TEMPGITHUBK }}"; do
