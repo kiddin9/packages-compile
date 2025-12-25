@@ -238,9 +238,9 @@ jobs:
             echo $ipk
             if [[ "$fpkg" && ! "$during" ]]; then
               if [ "$(echo "${{ github.event.action }}" | grep "lang")" ];then
-                [ "$(grep -E "(golang|node|rust|python)" package/feeds/kiddin9/$ipk/Makefile)" ] && comp
+                [ "$(grep -E '(golang|node|rust|python)' package/feeds/kiddin9/$ipk/Makefile)" ] && comp
               elif [ "$(echo "${{ github.event.action }}" | grep "all")" ];then
-                [ ! "$(grep -E "(golang|node|rust|python)" package/feeds/kiddin9/$ipk/Makefile)" ] && comp
+                [ ! "$(grep -E '(golang|node|rust|python)' package/feeds/kiddin9/$ipk/Makefile)" ] && comp
               else
                 comp
               if
