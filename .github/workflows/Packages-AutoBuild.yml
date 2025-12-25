@@ -243,7 +243,7 @@ jobs:
                 [ ! "$(grep -E '(golang|node|rust)' package/feeds/kiddin9/$ipk/Makefile)" ] && comp
               else
                 comp
-              if
+              fi
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
               for token in "$REPO_TOKEN" "${{ secrets.TOKEN_KIDDIN9 }}" "${{ secrets.TEMPGITHUBK }}"; do
