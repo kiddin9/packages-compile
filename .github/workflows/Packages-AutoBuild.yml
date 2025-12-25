@@ -219,7 +219,7 @@ jobs:
         cd openwrt
         mv -f package/feeds/kiddin9 kiddin9.b
         mkdir package/feeds/kiddin9
-        mv -f kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,gn,quickjspp,qt*,libdouble*,libtorrent*} package/feeds/kiddin9/ || true
+        mv -f kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,gn,quickjspp,qt*,libdouble*} package/feeds/kiddin9/ || true
 
     - name: Compile the firmware
       run: |
