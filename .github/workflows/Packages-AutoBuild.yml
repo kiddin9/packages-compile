@@ -280,7 +280,7 @@ jobs:
       id: organize
       run: |
         mv -f openwrt/.config openwrt/bin/packages/*/kiddin9/ || true
-        echo "${{ github.event.action }}" | grep -qv "a-" && PACKAGES="openwrt/bin/packages/*/kiddin9/*"
+        echo "${{ github.event.action }}" | grep -E -qv '(all|lang)' && PACKAGES="openwrt/bin/packages/*/kiddin9/*"
         echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
