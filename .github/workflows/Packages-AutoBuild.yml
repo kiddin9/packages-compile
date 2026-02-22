@@ -193,9 +193,9 @@ jobs:
         if [ -f "devices/${{matrix.target}}/custom.sh" ]; then
           /bin/bash "devices/${{matrix.target}}/custom.sh"
         fi
-        find "devices/common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c " patch -d './' -p1 -E -f --no-backup-if-mismatch --ignore-whitespace -i '%'"
+        find "devices/common/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' -p1 -E -f --no-backup-if-mismatch --ignore-whitespace -i '%'"
         if [ -n "$(ls -A "devices/${{matrix.target}}/patches" 2>/dev/null)" ]; then
-          find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c " patch -d './' -p1 -E -f --no-backup-if-mismatch--ignore-whitespace -i '%'"
+          find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' -p1 -E -f --no-backup-if-mismatch--ignore-whitespace -i '%'"
         fi
         cp -Rf ./diy/* ./ || true
         sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
