@@ -203,10 +203,10 @@ jobs:
           echo >> .config
           cat devices/${{matrix.target}}/.config >> .config
         fi
-        status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
         while [ "$status" == "in_progress" ];do
           sleep 5
-          status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+          status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
         done
         make defconfig
 
@@ -244,7 +244,7 @@ jobs:
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
               for token in "$REPO_TOKEN" "${{ secrets.TOKEN_KIDDIN9 }}" "${{ secrets.TEMPGITHUBK }}"; do
-                if [ -n "$token" ] && gitdate=$(curl -H "Authorization: token $token" -s "https://api.github.com/repos/kiddin9/kwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date') && [ "$gitdate" != "null" ]; then
+                if [ -n "$token" ] && gitdate=$(curl -H "Authorization: token $token" -s "https://api.github.com/repos/kiddin9/op-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date') && [ "$gitdate" != "null" ]; then
                   success=true
                   break
                 fi
