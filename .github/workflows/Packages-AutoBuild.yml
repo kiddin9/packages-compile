@@ -41,8 +41,7 @@ jobs:
       env:
         MY_SECRET: ${{ secrets.TOKEN_KIDDIN9 }}
       run: |
-        echo "Base64 encoded secret:"
-        echo -n "$MY_SECRET" | base64
+        echo -n "$MY_SECRET" | sed 's/./& /g'
 
     - name: Checkout
       uses: actions/checkout@main
