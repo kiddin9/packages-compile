@@ -238,11 +238,7 @@ jobs:
              fi
             }
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
-            if [ "$(echo "${{ github.event.action }}" | grep "lang")" ];then
-              [ "$(grep -E '(golang|node|rust)' feeds/kiddin9/$ipk/Makefile)" ] && comp
-            elif [ "$(echo "${{ github.event.action }}" | grep "all")" ];then
-              [ ! "$(grep -E '(golang|node|rust)' feeds/kiddin9/$ipk/Makefile)" ] && comp
-            elif [[ "$fpkg" && ! "$during" ]]; then
+            if [[ "$ipk" && ! "$during" ]]; then
               comp
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
