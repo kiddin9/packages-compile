@@ -242,7 +242,7 @@ jobs:
               comp
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
-              for token in "$REPO_TOKEN" "${{ secrets.TOKEN_KIDDIN9 }}" "${{ secrets.TEMPGITHUBK }}"; do
+              for token in "$REPO_TOKEN" "${{ secrets.TEMPGITHUBK }}" "${{ secrets.TOKEN_KIDDIN9 }}"; do
                 if [ -n "$token" ] && gitdate=$(curl -H "Authorization: token $token" -s "https://api.github.com/repos/kiddin9/op-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date') && [ "$gitdate" != "null" ]; then
                   success=true
                   break
