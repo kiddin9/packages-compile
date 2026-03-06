@@ -231,7 +231,11 @@ jobs:
           function comp(){
              echo "compile $ipk"
              cp -rf kiddin9.b/$ipk* package/feeds/kiddin9/
-             make -k package/$ipk/compile -j$(($(nproc)+1)) || (make -i -k package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true)
+             if [[ $ipk != luci-app-* ]]; then
+             make -k package/$ipk/compile -j$(($(nproc)+1)) || (make -k package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true)
+             else
+             make -k -i package/$ipk/compile -j$(($(nproc)+1))
+             fi
             }
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
             if [ "$(echo "${{ github.event.action }}" | grep "lang")" ];then
