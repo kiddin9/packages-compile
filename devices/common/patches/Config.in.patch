@@ -26,6 +26,6 @@
 -	default n
 +	default y
  
- config KERNEL_WIRELESS_EXT
+ config config KERNEL_PAGE_POOL
  	bool
 
