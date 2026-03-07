@@ -13,9 +13,9 @@
 +		bool "Use APK instead of OPKG to build distribution"
 +		default n
 +
- endmenu
+ 	comment "General build options"
  
- menu "Advanced configuration options (for developers)"
+ 	config BUILD_PATENTED
 
 --- a/Config-build.in
 +++ b/Config-build.in
