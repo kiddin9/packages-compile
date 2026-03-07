@@ -26,6 +26,6 @@
 -	default n
 +	default y
  
- config config KERNEL_PAGE_POOL
+ config KERNEL_PAGE_POOL
  	bool
 
