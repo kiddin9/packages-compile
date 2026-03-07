@@ -238,7 +238,7 @@ jobs:
              fi
             }
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
-            if [[ "$ipk" && ! "$during" ]]; then
+            if [[ "$fpkg" && ! "$during" ]]; then
               comp
             else
               REPO_TOKEN="${{ env.REPO_TOKEN }}"
