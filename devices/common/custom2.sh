@@ -11,7 +11,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
-rm -rf package/feeds/packages/{netdata,cloudreve,smartdns,vsftpd,p910nd,aria2,ariang,coremark,watchcat,dockerd,frp}
+rm -rf package/feeds/packages/{netdata,cloudreve,smartdns,vsftpd,p910nd,aria2,ariang,coremark,watchcat,dockerd,frp,miniupnpd*}
 
 rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers|mac80211) feeds/base_root/package/boot
 
