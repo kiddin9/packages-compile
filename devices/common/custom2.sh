@@ -11,7 +11,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
-rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers|mac80211) feeds/base_root/package/uboot-!(tools)
+rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers|mac80211) feeds/base_root/package/boot/uboot-!(tools)
 
 cp -f devices/common/.config .config
 
