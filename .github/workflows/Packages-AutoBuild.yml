@@ -143,7 +143,6 @@ jobs:
         	wget -c -O sdk.tar.zst "$MIRROR_URL"
         }
 
-
     - name: Free up disk space
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -302,8 +301,18 @@ jobs:
         REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
         TARGET: "/www/wwwroot/dl.openwrt.ai/releases/25.12/packages/${{matrix.target}}/kiddin9/"
-        SCRIPT_AFTER: |
-            bash opkg ${{matrix.target}} &
+        #SCRIPT_AFTER: |
+        #    bash opkg ${{matrix.target}} &
+
+    - name: remote ssh command
+      uses: appleboy/ssh-action@master
+      if: env.SSH_PRIVATE_KEY && ! contains(github.event.action, 'noser')
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ env.SSH_PRIVATE_KEY }}
+        script: |
+          bash opkg ${{matrix.target}} &
 
     - name: Create release
       id: create_release
