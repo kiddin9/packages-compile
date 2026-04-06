@@ -12,7 +12,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 
 rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,luci-app-package-manager,\
 dnsmasq,firewall*,wifi-scripts,opkg,ppp,curl,luci-app-firewall,\
-nftables,fstools,wireless-regdb,libnftnl,netdata}
+nftables,fstools,wireless-regdb,libnftnl}
 rm -rf feeds/packages/libs/libcups
 
 mv -f feeds/kiddin9/{rust-bindgen,go-rice,gn}  feeds/packages/devel/
