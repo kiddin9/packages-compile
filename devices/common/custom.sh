@@ -30,6 +30,7 @@ rm -Rf feeds/packages/multimedia/!(gstreamer1)
 rm -Rf feeds/packages/net/!(mosquitto|curl|unbound)
 rm -Rf feeds/packages/lang/{php*,ruby,perl}
 rm -Rf feeds/packages/utils/!(tar|xz|docker|dockerd|containerd|zstd|unzip|acl|lm-sensors|xxhash|runc|tini)
+rm -Rf feeds/base_root/package/boot/uboot-*
 rm -Rf feeds/base_root/package/firmware
 rm -Rf feeds/base_root/package/network/!(services|utils)
 rm -Rf feeds/base_root/package/network/services/!(ppp)
