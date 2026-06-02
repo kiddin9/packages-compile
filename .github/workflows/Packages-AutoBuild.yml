@@ -65,7 +65,7 @@ jobs:
 
     - name: Free disk space
       uses: coder-xiaomo/free-disk-space@main
-      if: contains(github.event.action, 'all') || contains(github.event.action, 'lang')
+      if: contains(github.event.action, 'all') || contains(github.event.action, 'a-l')
       with:
         tool-cache: false
         android: true
