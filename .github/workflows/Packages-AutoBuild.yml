@@ -169,6 +169,7 @@ jobs:
           cd $rootdir
           }
         export -f git_clone_path
+        mkdir -p openwrt
         tar -xf sdk.tar.zst -C openwrt
         cd openwrt
         cp -rf ./openwrt-sdk*/. ./ 2>/dev/null || true
