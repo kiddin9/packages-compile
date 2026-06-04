@@ -211,6 +211,7 @@ jobs:
         mv -f package/feeds/kiddin9 kiddin9.b
         mkdir package/feeds/kiddin9
         mv -fv kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,gn,quickjspp,qt*,libdouble*,upx} package/feeds/kiddin9/ || true
+        df -hT
 
     - name: Compile the firmware
       run: |
