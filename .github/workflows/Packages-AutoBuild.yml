@@ -65,7 +65,7 @@ jobs:
 
     - name: Free disk space
       uses: coder-xiaomo/free-disk-space@main
-      if: contains(github.event.action, 'all') || contains(github.event.action, 'a-l')
+      if: contains(github.event.action, 'a-l')
       with:
         tool-cache: false
         android: true
@@ -74,6 +74,18 @@ jobs:
         large-packages: true
         docker-images: true
         swap-storage: true
+
+    - name: Free disk space
+      uses: coder-xiaomo/free-disk-space@main
+      if: ! contains(github.event.action, 'a-l')
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: false
+        swap-storage: false
 
     - name: Initialization environment
       env:
