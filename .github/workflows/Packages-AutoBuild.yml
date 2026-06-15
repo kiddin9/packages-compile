@@ -65,7 +65,7 @@ jobs:
 
     - name: Free disk space
       uses: coder-xiaomo/free-disk-space@main
-      if: contains(github.event.action, 'a-l')
+      if: ${{ contains(github.event.action, 'a-l') }}
       with:
         tool-cache: false
         android: true
@@ -77,7 +77,7 @@ jobs:
 
     - name: Free disk space
       uses: coder-xiaomo/free-disk-space@main
-      if: ! contains(github.event.action, 'a-l')
+      if: ${{ !contains(github.event.action, 'a-l') }}
       with:
         tool-cache: false
         android: true
