@@ -38,7 +38,6 @@ rm -Rf feeds/base_root/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base_root/package/kernel/!(cryptodev-linux|bpf-headers|mac80211|linux)
 #COMMENT
 
-sed -i 's?feeds/packages/lang/golang?feeds/kiddin9/golang?' package/feeds/kiddin9/Makefile
 status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 while [[ "$status" == "in_progress" || "$status" == "queued" ]];do
 echo "wait 5s"
