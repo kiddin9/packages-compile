@@ -16,6 +16,7 @@ nftables,fstools,wireless-regdb,libnftnl}
 rm -rf feeds/packages/libs/libcups
 
 mv -f feeds/kiddin9/{rust-bindgen,go-rice,gn}  feeds/packages/devel/
+mv -f feeds/kiddin9/golang  feeds/packages/lang/
 
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
@@ -61,7 +62,6 @@ sed -i \
 	-e 's/+python\( \|$\)/+python3/' \
 	-e 's?../../lang?$(TOPDIR)/feeds/packages/lang?' \
 	-e 's,$(STAGING_DIR_HOST)/bin/upx,upx,' \
-	-e 's?feeds/packages/lang/golang?feeds/kiddin9/golang?' \
 	package/feeds/kiddin9/*/Makefile
 
 cp -f devices/common/.config .config
