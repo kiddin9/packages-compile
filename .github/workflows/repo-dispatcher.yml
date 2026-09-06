@@ -39,6 +39,7 @@ jobs:
       with:
         workflow_id: all
         access_token: ${{ secrets.TOKEN_KIDDIN9 }}
+        force_cancel: true
     
     - name: Trigger matrix Update
       run: |
