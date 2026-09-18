@@ -10,7 +10,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 
 ./scripts/feeds update -a
 
-rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,luci-app-package-manager,\
+rm -rf feeds/kiddin9/{diy,mt-drivers,shortcut-fe,luci-app-mtwifi,base-files,netifd,\
 dnsmasq,firewall*,wifi-scripts,opkg,ppp,curl,\
 nftables,fstools,wireless-regdb,libnftnl,rpcd-mod-luci}
 rm -rf feeds/packages/libs/libcups
