@@ -14,7 +14,7 @@ on:
   #     - master
   # 北京时间 00:17
   schedule:
-    - cron: 11 12 * * *
+    - cron: 11 11 * * *
   watch:
     types: started
   workflow_dispatch:
