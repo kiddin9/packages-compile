@@ -16,8 +16,8 @@ nftables,fstools,wireless-regdb,libnftnl,rpcd-mod-luci}
 rm -rf feeds/packages/libs/libcups
 
 mv -f feeds/kiddin9/{rust-bindgen,go-rice,gn}  feeds/packages/devel/
-rm -rf feeds/packages/lang/golang
-mv -f feeds/kiddin9/golang  feeds/packages/lang/
+
+sed -i "s/GO_DEFAULT_VERSION:=1.26/GO_DEFAULT_VERSION:=1.27/" feeds/packages/lang/golang/golang-values.mk
 
 for ipk in $(find feeds/kiddin9/* -maxdepth 0 -type d);
 do
