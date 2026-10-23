@@ -54,6 +54,7 @@ jobs:
           [ "$during" ] || during="1.05"
           durings=`echo "$during*60*60*24" | bc`
           if [[ $(expr $gitdate + ${durings%.*}) -lt $now ]]; then
+            echo "$gitdate $now"
             exit;
           fi
         gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].created_at') || true
