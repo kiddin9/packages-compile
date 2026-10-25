@@ -201,6 +201,11 @@ jobs:
         cp -rf devices/common/. ./
         cp -rf devices/${{matrix.target}}/. ./
         chmod -R +x devices/* || true
+        status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        while [ "$status" == "in_progress" ];do
+          sleep 10
+          status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        done
         /bin/bash "devices/common/custom.sh"
         if [ -f "devices/${{matrix.target}}/custom.sh" ]; then
           /bin/bash "devices/${{matrix.target}}/custom.sh"
@@ -215,11 +220,6 @@ jobs:
           echo >> .config
           cat devices/${{matrix.target}}/.config >> .config
         fi
-        status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
-        while [ "$status" == "in_progress" ];do
-          sleep 5
-          status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
-        done
         make defconfig
 
     - name: SSH connection to Actions
