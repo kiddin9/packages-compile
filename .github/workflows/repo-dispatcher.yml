@@ -14,7 +14,7 @@ on:
   #     - master
   # 北京时间 00:17
   schedule:
-    - cron: 41 11 * * *
+    - cron: 41 12 * * *
   watch:
     types: started
   workflow_dispatch:
@@ -44,15 +44,13 @@ jobs:
     - name: Trigger matrix Update
       run: |
         gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/commits?&per_page=1" | jq -r '.[0].commit.committer.date') || true
-        fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+        fpkg="$(echo "${{github.event.inputs.packages}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
         during="$(echo "${{github.event.inputs.packages}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
         [[ "$fpkg" && ! "$during" ]] || {
-          [ "$during" ] || during="1.05"
+          [ "$during" ] || during="1.5"
           durings=`echo "$during*60*60*24" | bc`
           gitdate=$(date -d "$gitdate" +%s)
           now=$(date -d "$(date)" +%s)
-          [ "$during" ] || during="1.05"
-          durings=`echo "$during*60*60*24" | bc`
           if [[ $(expr $gitdate + ${durings%.*}) -lt $now ]]; then
             echo "$gitdate $now"
             exit;
