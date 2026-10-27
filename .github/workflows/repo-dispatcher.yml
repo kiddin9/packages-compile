@@ -55,11 +55,11 @@ jobs:
         -H "Accept: application/vnd.github.everest-preview+json" \
         -H "Authorization: token ${{ env.REPO_TOKEN }}" \
         --data '{"event_type": "update"}'
-        sleep 5
+        sleep 165
         fi
         status=$(echo $packages_actions | jq -r '.workflow_runs[0].status')
         while [ "$status" == "in_progress" ];do
-          sleep 30
+          sleep 10
           status=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs" | jq -r '.workflow_runs[0].status')
         done
         gitdate=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/commits?&per_page=1" | jq -r '.[0].commit.committer.date') || true
