@@ -55,6 +55,7 @@ jobs:
         -H "Accept: application/vnd.github.everest-preview+json" \
         -H "Authorization: token ${{ env.REPO_TOKEN }}" \
         --data '{"event_type": "update"}'
+        sleep 5
         fi
         status=$(echo $packages_actions | jq -r '.workflow_runs[0].status')
         while [ "$status" == "in_progress" ];do
