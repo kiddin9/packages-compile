@@ -66,6 +66,9 @@ sed -i \
 	-e 's,$(STAGING_DIR_HOST)/bin/upx,upx,' \
 	package/feeds/kiddin9/*/Makefile
 
+git_clone_path main https://github.com/openwrt/openwrt package/firmware/rtl826x-firmware
+mv -f package/firmware/rtl826x-firmware package/feeds/kiddin9/
+
 cp -f devices/common/.config .config
 
 sed -i '/WARNING: Makefile/d' scripts/package-metadata.pl
