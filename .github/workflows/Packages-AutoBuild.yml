@@ -148,7 +148,7 @@ jobs:
         fi
 
         PRIMARY_URL="https://downloads.openwrt.org/$SDK_PATH"
-        MIRROR_URL="mirror-03.infra.openwrt.org/$SDK_PATH"
+        MIRROR_URL="https://mirror-03.infra.openwrt.org/$SDK_PATH"
 
         timeout 2m aria2c -c -s 16 -x 16 -o sdk.tar.zst "$PRIMARY_URL" || {
         	echo "Primary download failed, trying mirror..."
