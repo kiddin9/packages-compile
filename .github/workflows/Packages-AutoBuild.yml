@@ -100,24 +100,6 @@ jobs:
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "Asia/Shanghai"
 
-    - name: Resolve honk toolchain pins
-      id: honk-toolchain
-      shell: bash
-      run: |
-        set -euo pipefail
-        ./packages-compile/openwrt/feeds/kiddin9/honk/honk_toolchain.sh | tee "$RUNNER_TEMP/honk-toolchain.env"
-        . "$RUNNER_TEMP/honk-toolchain.env"
-        curl -fsSL --retry 3 -o /tmp/bpf-linker.tar.zst \
-            "https://github.com/aya-rs/bpf-linker/releases/download/v${BPF_LINKER_VERSION}/bpf-linker-x86_64-unknown-linux-musl.tar.zst"
-          echo "${BPF_LINKER_SHA256}  /tmp/bpf-linker.tar.zst" | sha256sum -c -
-          sudo tar --zstd -xf /tmp/bpf-linker.tar.zst -C /usr/local/bin
-          echo "ZIG_VERSION=${ZIG_VERSION}" >> $GITHUB_ENV
-
-    - name: Setup Zig for BoringSSL musl cross-compilation
-      uses: mlugg/setup-zig@v2
-      with:
-        version: ${{ env.ZIG_VERSION }}
-
     - name: Get current date
       id: date
       run: |
@@ -259,8 +241,25 @@ jobs:
           function comp(){
              echo "compile $ipk"
              cp -rf kiddin9.b/$ipk* package/feeds/kiddin9/
+             if [[ $ipk == "honk" ]]; then
+               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path
+               . "$HOME/.cargo/env"
+
+               # 从 honk/Makefile 的 pin 解析版本
+               eval "$(./honk/honk_toolchain.sh)"
+
+               curl -fsSL -o /tmp/bpf-linker.tar.zst \
+                 "https://github.com/aya-rs/bpf-linker/releases/download/v${BPF_LINKER_VERSION}/bpf-linker-x86_64-unknown-linux-musl.tar.zst"
+               echo "${BPF_LINKER_SHA256}  /tmp/bpf-linker.tar.zst" | sha256sum -c -
+               sudo tar --zstd -xf /tmp/bpf-linker.tar.zst -C /usr/local/bin
+
+               curl -fsSL -o /tmp/zig.tar.xz \
+                 "https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz"
+               sudo tar -xJf /tmp/zig.tar.xz -C /usr/local
+               sudo ln -sf "/usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
+             fi
              if [[ $ipk != luci-app-* ]]; then
-             make -k package/$ipk/compile -j$(($(nproc)+1)) || (make -k package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true)
+             make package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true
              else
              make -k -i package/$ipk/compile -j$(($(nproc)+1))
              fi
