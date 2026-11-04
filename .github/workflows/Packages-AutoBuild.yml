@@ -246,7 +246,7 @@ jobs:
                . "$HOME/.cargo/env"
 
                # 从 honk/Makefile 的 pin 解析版本
-               eval "$(./packages-compile/openwrt/feeds/kiddin9/honk/honk_toolchain.sh)"
+               eval "$(${{ github.workspace }}/openwrt/feeds/kiddin9/honk/honk_toolchain.sh)"
 
                curl -fsSL -o /tmp/bpf-linker.tar.zst \
                  "https://github.com/aya-rs/bpf-linker/releases/download/v${BPF_LINKER_VERSION}/bpf-linker-x86_64-unknown-linux-musl.tar.zst"
