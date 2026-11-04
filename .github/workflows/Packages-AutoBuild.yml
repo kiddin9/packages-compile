@@ -221,8 +221,10 @@ jobs:
         make defconfig
 
     - name: SSH connection to Actions
-      uses: kiddin9/debugger-action@master
+      uses: owenthereal/action-upterm@v2
       if: contains(github.event.action, 'ssh')
+      with:
+          limit-access-to-actor: true
 
     - name: Prepare
       run: |
