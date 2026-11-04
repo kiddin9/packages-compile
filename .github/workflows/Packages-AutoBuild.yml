@@ -100,6 +100,9 @@ jobs:
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "Asia/Shanghai"
 
+    - name: Setup Zig for BoringSSL musl cross-compilation
+      uses: mlugg/setup-zig@v2
+
     - name: Get current date
       id: date
       run: |
