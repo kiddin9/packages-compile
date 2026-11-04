@@ -100,8 +100,23 @@ jobs:
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "Asia/Shanghai"
 
+    - name: Resolve honk toolchain pins
+      id: honk-toolchain
+      shell: bash
+      run: |
+        set -euo pipefail
+        ./openwrt/feeds/kiddin9/honk/honk_toolchain.sh | tee "$RUNNER_TEMP/honk-toolchain.env"
+        . "$RUNNER_TEMP/honk-toolchain.env"
+        curl -fsSL --retry 3 -o /tmp/bpf-linker.tar.zst \
+            "https://github.com/aya-rs/bpf-linker/releases/download/v${BPF_LINKER_VERSION}/bpf-linker-x86_64-unknown-linux-musl.tar.zst"
+          echo "${BPF_LINKER_SHA256}  /tmp/bpf-linker.tar.zst" | sha256sum -c -
+          sudo tar --zstd -xf /tmp/bpf-linker.tar.zst -C /usr/local/bin
+          echo "ZIG_VERSION=${ZIG_VERSION}" >> $GITHUB_ENV
+
     - name: Setup Zig for BoringSSL musl cross-compilation
       uses: mlugg/setup-zig@v2
+      with:
+        version: ${{ env.ZIG_VERSION }}
 
     - name: Get current date
       id: date
