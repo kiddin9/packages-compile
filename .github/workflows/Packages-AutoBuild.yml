@@ -259,7 +259,7 @@ jobs:
                sudo ln -sf "/usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
              fi
              if [[ $ipk != luci-app-* ]]; then
-             make package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true
+             make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s 2>&1 | tee error_$ipk.log | grep -i "Error 2" || true
              else
              make -k -i package/$ipk/compile -j$(($(nproc)+1))
              fi
