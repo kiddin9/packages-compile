@@ -152,7 +152,7 @@ jobs:
         MIRROR_URL2="https://ftp.fau.de/openwrt/$SDK_PATH"
 
         for i in {1..5}; do
-          aria2c -c -s 8 -x 8 -k 1M --timeout=15 --connect-timeout=10 --max-tries=5 --retry-wait=3 -o sdk.tar.zst "$PRIMARY_URL" "$MIRROR_URL" && break
+          aria2c -c -s 6 -x 6 -k 1M --timeout=15 --connect-timeout=10 --max-tries=5 --retry-wait=3 -o sdk.tar.zst "$PRIMARY_URL" "$MIRROR_URL" && break
           echo "Download interrupted, retrying ($i/5) in 3s..."
           sleep 3
         done
