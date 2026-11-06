@@ -149,11 +149,9 @@ jobs:
 
         PRIMARY_URL="https://downloads.openwrt.org/$SDK_PATH"
         MIRROR_URL="https://mirror-03.infra.openwrt.org/$SDK_PATH"
+        MIRROR_URL2="https://ftp.fau.de/openwrt/$SDK_PATH"
 
-        timeout 2m aria2c -c -s 16 -x 16 -o sdk.tar.zst "$PRIMARY_URL" || {
-        	echo "Primary download failed, trying mirror..."
-        	timeout 2m aria2c -c -s 16 -x 16 -o sdk.tar.zst "$MIRROR_URL"
-        }
+        aria2c -c -s 16 -x 8 -k 1M --lowest-speed-limit=100K --max-tries=5 --retry-wait=3 -o sdk.tar.zst "$PRIMARY_URL" "$MIRROR_URL" "$MIRROR_URL2"
 
     - name: Free up disk space
       env:
