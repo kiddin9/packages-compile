@@ -54,7 +54,7 @@ done
 
 rm -rf package/feeds/kiddin9/luci-app-quickstart/root/usr/share/luci/menu.d/luci-app-quickstart.json
 
-sed -i '/KERNEL_DEBUG_INFO_BTF/d' package/feeds/kiddin9/{dae,daed}
+sed -i '/KERNEL_DEBUG_INFO_BTF/d' package/feeds/kiddin9/{dae,daed}/Makefile
 
 sed -i 's/\(page\|e\)\?.acl_depends.*\?}//' `find package/feeds/kiddin9/luci-*/luasrc/controller/* -name "*.lua"`
 
