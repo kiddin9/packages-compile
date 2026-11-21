@@ -261,7 +261,13 @@ jobs:
                sudo ln -sf "/usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
              fi
              if [[ $ipk != luci-app-* ]]; then
-             make package/$ipk/compile -j$(($(nproc)+1)) || { make package/$ipk/compile -j1 V=s 2>&1 | tee error_$ipk.log | grep -i -E "error|fail" || true; }
+             make package/$ipk/compile -j$(($(nproc)+1)) || {
+               echo "::group::Full build error log for $ipk"
+               make package/$ipk/compile -j1 V=s 2>&1 | tee error_$ipk.log || true
+               echo "::endgroup::"
+               echo "=== Last 50 lines of error_$ipk.log ==="
+               tail -n 50 error_$ipk.log
+             }
              else
              make -k -i package/$ipk/compile -j$(($(nproc)+1))
              fi
