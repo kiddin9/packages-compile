@@ -1,6 +1,6 @@
 --- a/feeds/luci/luci.mk
 +++ b/feeds/luci/luci.mk
-@@ -84,7 +84,7 @@ define findrev
+@@ -92,7 +92,7 @@ define findrev
        set -- $$(git log -1 --format="%ct %h" --abbrev=7 -- $(if $(1),. ':(exclude)po',po)); \
        if [ -n "$$1" ]; then
          secs="$$(($$1 % 86400))"; \
@@ -9,7 +9,7 @@
          printf '%s.%05d~%s' "$$yday" "$$secs" "$$2"; \
        else \
          echo "0"; \
-@@ -220,6 +220,16 @@ define Package/$(PKG_NAME)/install
+@@ -230,6 +230,15 @@ define Package/$(PKG_NAME)/install
  	$(call Build/Install/Default)
  	$(CP) $(PKG_INSTALL_DIR)/* $(1)/
   endif
@@ -22,14 +22,13 @@
 +		po2lmo $(po) \
 +			$(1)$(LUCI_LIBRARYDIR)/i18n/$(basename $(notdir $(po))).zh-cn.lmo;)
 + endif
-+
  endef
  
  ifndef Package/$(PKG_NAME)/postinst
-@@ -345,5 +355,5 @@ define LuciTranslation
+@@ -355,5 +364,5 @@ define LuciTranslation
  
  endef
  
 -$(foreach lang,$(LUCI_LANGUAGES),$(if $(LUCI_LANG.$(lang)),$(eval $(call LuciTranslation,$(firstword $(LUCI_LC_ALIAS.$(lang)) $(lang)),$(lang)))))
-+# $(foreach lang,$(filter-out zh_Hans,$(LUCI_LANGUAGES)),$(if $(LUCI_LANG.$(lang)),$(eval $(call LuciTranslation,$(firstword $(LUCI_LC_ALIAS.$(lang)) $(lang)),$(lang)))))
++# $(foreach lang,$(LUCI_LANGUAGES),$(if $(LUCI_LANG.$(lang)),$(eval $(call LuciTranslation,$(firstword $(LUCI_LC_ALIAS.$(lang)) $(lang)),$(lang)))))
  $(foreach pkg,$(LUCI_BUILD_PACKAGES),$(eval $(call BuildPackage,$(pkg))))
