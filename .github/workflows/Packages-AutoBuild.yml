@@ -99,6 +99,11 @@ jobs:
           sudo -E apt-get -qq clean
           sudo timedatectl set-timezone "Asia/Shanghai"
 
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
+        with:
+          disable_annotations: true
+
       - name: Get current date
         id: date
         run: |
@@ -158,9 +163,21 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo mkdir -p -m 777 openwrt /mnt/openwrt/staging_dir /mnt/openwrt/build_dir /mnt/openwrt/bin  /mnt/openwrt/dl
+          sudo mkdir -p -m 777 openwrt /mnt/openwrt/staging_dir /mnt/openwrt/build_dir /mnt/openwrt/bin /mnt/openwrt/dl /mnt/openwrt/.sccache
           ln -sf /mnt/openwrt/build_dir openwrt/build_dir
           ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
+          ln -sf /mnt/openwrt/dl openwrt/dl
+          if [ -n "${SCCACHE_PATH:-}" ] && [ -x "${SCCACHE_PATH}" ]; then
+            sudo ln -sf "${SCCACHE_PATH}" /usr/local/bin/sccache
+          elif command -v sccache >/dev/null 2>&1; then
+            sudo ln -sf "$(command -v sccache)" /usr/local/bin/sccache
+          fi
+          {
+            echo "SCCACHE_GHA_ENABLED=false"
+            echo "SCCACHE_GHA_VERSION="
+            echo "SCCACHE_DIR=/mnt/openwrt/.sccache"
+            echo "SCCACHE_CACHE_SIZE=1G"
+          } >> "$GITHUB_ENV"
           df -hT
 
       - name: Load custom configuration
@@ -216,6 +233,9 @@ jobs:
             echo >> .config
             cat devices/${{matrix.target}}/.config >> .config
           fi
+          echo >> .config
+          echo 'CONFIG_RUST_SCCACHE=y' >> .config
+          echo 'CONFIG_RUST_SCCACHE_DIR="/mnt/openwrt/.sccache"' >> .config
           make defconfig
 
       - name: SSH connection to Actions
@@ -231,6 +251,102 @@ jobs:
           mkdir package/feeds/kiddin9
           mv -fv kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qt*,libdouble*,upx,node-pnpm} package/feeds/kiddin9/ || true
           df -hT
+
+      - name: Restore Rust Host Toolchain Cache
+        id: cache-rust
+        uses: actions/cache/restore@v4
+        with:
+          key: rust-toolchain-${{ matrix.target }}-${{ hashFiles('openwrt/feeds/packages/lang/rust/**') }}
+          path: |
+            /mnt/openwrt/staging_dir/target-*/host
+            /mnt/openwrt/staging_dir/hostpkg/cargo
+            /mnt/openwrt/staging_dir/hostpkg/bin/cargo*
+            /mnt/openwrt/staging_dir/hostpkg/bin/cbindgen*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.rust*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.cargo*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.cbindgen*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.prepared*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.configured*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.built
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.built
+
+      - name: Restore Node Toolchain Cache
+        id: cache-node
+        uses: actions/cache/restore@v4
+        with:
+          key: node-toolchain-${{ matrix.target }}-${{ hashFiles('openwrt/feeds/packages/lang/node/**', 'openwrt/feeds/packages/lang/node-yarn/**', 'openwrt/feeds/kiddin9/node-pnpm/**') }}
+          path: |
+            /mnt/openwrt/staging_dir/hostpkg/bin/node*
+            /mnt/openwrt/staging_dir/hostpkg/bin/npm*
+            /mnt/openwrt/staging_dir/hostpkg/bin/npx*
+            /mnt/openwrt/staging_dir/hostpkg/bin/pnpm*
+            /mnt/openwrt/staging_dir/hostpkg/bin/pnpx*
+            /mnt/openwrt/staging_dir/hostpkg/bin/yarn*
+            /mnt/openwrt/staging_dir/hostpkg/bin/corepack*
+            /mnt/openwrt/staging_dir/hostpkg/include/node
+            /mnt/openwrt/staging_dir/hostpkg/lib/node_modules
+            /mnt/openwrt/staging_dir/hostpkg/share/doc/node
+            /mnt/openwrt/staging_dir/hostpkg/share/systemtap/tapset/node.stp
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.node*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.built
+            /mnt/openwrt/build_dir/host/node-*/.prepared*
+            /mnt/openwrt/build_dir/host/node-*/.configured*
+            /mnt/openwrt/build_dir/host/node-*/.built
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.built
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.built
+            /mnt/openwrt/staging_dir/target-*/usr/include/node
+            /mnt/openwrt/staging_dir/target-*/pkginfo/node*
+            /mnt/openwrt/staging_dir/target-*/stamp/.node*
+            /mnt/openwrt/build_dir/target-*/node-v*/.prepared*
+            /mnt/openwrt/build_dir/target-*/node-v*/.configured*
+            /mnt/openwrt/build_dir/target-*/node-v*/.built
+            /mnt/openwrt/build_dir/target-*/node-v*/.pkgdir
+
+      - name: Restore sccache & Package Registries
+        id: cache-registries
+        uses: actions/cache/restore@v4
+        with:
+          key: pkg-registries-${{ matrix.target }}-${{ github.run_id }}
+          restore-keys: |
+            pkg-registries-${{ matrix.target }}-
+            pkg-registries-
+          path: |
+            /mnt/openwrt/.sccache
+            /mnt/openwrt/dl/cargo/registry/index
+            /mnt/openwrt/dl/cargo/registry/cache
+            /mnt/openwrt/dl/cargo/git/db
+            ~/.npm
+            ~/.local/share/pnpm/store
+            ~/.pnpm-store
+            ~/.cache/yarn
+
+      - name: Align OpenWrt Stamp Timestamps
+        run: |
+          if [ "${{ steps.cache-rust.outputs.cache-hit }}" = "true" ] || [ "${{ steps.cache-node.outputs.cache-hit }}" = "true" ]; then
+            find /mnt/openwrt/build_dir -maxdepth 4 \
+              \( -name "rustc-*" -o -name "cargo-c-*" -o -name "node-*" -o -name "pnpm-*" -o -name "yarn-*" \) \
+              -type d 2>/dev/null | while read -r dir; do
+                compgen -G "$dir/.prepared*" > /dev/null && touch -c "$dir"/.prepared*
+                sleep 0.1
+                compgen -G "$dir/.configured*" > /dev/null && touch -c "$dir"/.configured*
+                sleep 0.1
+                [ -f "$dir/.built" ] && touch -c "$dir/.built"
+            done
+            sleep 0.1
+            find /mnt/openwrt/staging_dir -path "*/stamp/*" \
+              \( -name ".rust*" -o -name ".cargo*" -o -name ".cbindgen*" -o -name ".node*" \) \
+              -exec touch -c {} + 2>/dev/null || true
+          fi
+          sccache --zero-stats >/dev/null 2>&1 || true
+          touch /tmp/.build_start_marker
 
       - name: Compile the firmware
         run: |
@@ -259,15 +375,15 @@ jobs:
               } || true
             fi
             if [[ $ipk != luci-app-* ]]; then
-              make package/$ipk/compile -j$(($(nproc)+1)) || {
+              make package/$ipk/compile -j$(($(nproc)+1)) CONFIG_RUST_SCCACHE=y CONFIG_RUST_SCCACHE_DIR="/mnt/openwrt/.sccache" || {
                 echo "::group::Full build error log for $ipk"
-                make package/$ipk/compile -j1 V=s 2>&1 | tee error_$ipk.log || true
+                make package/$ipk/compile -j1 V=s CONFIG_RUST_SCCACHE=y CONFIG_RUST_SCCACHE_DIR="/mnt/openwrt/.sccache" 2>&1 | tee error_$ipk.log || true
                 echo "::endgroup::"
                 echo "=== Last 50 lines of error_$ipk.log ==="
                 tail -n 50 error_$ipk.log
               }
             else
-              make -k -i package/$ipk/compile -j$(($(nproc)+1))
+              make -k -i package/$ipk/compile -j$(($(nproc)+1)) CONFIG_RUST_SCCACHE=y CONFIG_RUST_SCCACHE_DIR="/mnt/openwrt/.sccache"
             fi
           }
           if [[ "$fpkg" && ! "$during" ]]; then
@@ -338,6 +454,117 @@ jobs:
             fi
           fi
           echo "status=success" >> $GITHUB_ENV
+
+      - name: Check Compiled Toolchains & Flush sccache
+        id: check-toolchains
+        if: always()
+        run: |
+          if [ -f /mnt/openwrt/staging_dir/hostpkg/stamp/.rust_installed ] \
+            || compgen -G "/mnt/openwrt/staging_dir/target-*/host/stamp/.rust*_installed" > /dev/null \
+            || compgen -G "/mnt/openwrt/staging_dir/target-*/host/bin/rustc" > /dev/null; then
+            echo "rust_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+          if compgen -G "/mnt/openwrt/staging_dir/hostpkg/stamp/.node*_installed" > /dev/null \
+            || compgen -G "/mnt/openwrt/staging_dir/target-*/stamp/.node_installed" > /dev/null; then
+            echo "node_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          SCCACHE_STATS="$(sccache --show-stats 2>/dev/null || true)"
+          echo "=== sccache statistics ==="
+          echo "$SCCACHE_STATS"
+          sccache --stop-server >/dev/null 2>&1 || true
+
+          sccache_missed=false
+          if printf '%s\n' "$SCCACHE_STATS" | awk '/^Cache misses[[:space:]]+[0-9]+$/ && ($NF + 0) > 0 { found=1 } END { exit !found }'; then
+            sccache_missed=true
+          fi
+
+          pkg_dl_updated=false
+          if [ -f /tmp/.build_start_marker ]; then
+            for d in /mnt/openwrt/dl/cargo/registry/cache /mnt/openwrt/dl/cargo/git/db "$HOME/.npm" "$HOME/.local/share/pnpm/store" "$HOME/.pnpm-store" "$HOME/.cache/yarn"; do
+              if [ -d "$d" ] && [ -n "$(find "$d" -type f -newer /tmp/.build_start_marker -print -quit 2>/dev/null)" ]; then
+                pkg_dl_updated=true
+                break
+              fi
+            done
+          fi
+
+          if [ "$sccache_missed" = true ] || [ "$pkg_dl_updated" = true ]; then
+            echo "registry_dirty=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save Rust Host Toolchain Cache
+        if: always() && steps.cache-rust.outputs.cache-hit != 'true' && steps.check-toolchains.outputs.rust_ready == 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache-rust.outputs.cache-primary-key }}
+          path: |
+            /mnt/openwrt/staging_dir/target-*/host
+            /mnt/openwrt/staging_dir/hostpkg/cargo
+            /mnt/openwrt/staging_dir/hostpkg/bin/cargo*
+            /mnt/openwrt/staging_dir/hostpkg/bin/cbindgen*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.rust*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.cargo*
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.cbindgen*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.prepared*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.configured*
+            /mnt/openwrt/build_dir/target-*/host/rustc-*/.built
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/cargo-c-*/.built
+
+      - name: Save Node Toolchain Cache
+        if: always() && steps.cache-node.outputs.cache-hit != 'true' && steps.check-toolchains.outputs.node_ready == 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache-node.outputs.cache-primary-key }}
+          path: |
+            /mnt/openwrt/staging_dir/hostpkg/bin/node*
+            /mnt/openwrt/staging_dir/hostpkg/bin/npm*
+            /mnt/openwrt/staging_dir/hostpkg/bin/npx*
+            /mnt/openwrt/staging_dir/hostpkg/bin/pnpm*
+            /mnt/openwrt/staging_dir/hostpkg/bin/pnpx*
+            /mnt/openwrt/staging_dir/hostpkg/bin/yarn*
+            /mnt/openwrt/staging_dir/hostpkg/bin/corepack*
+            /mnt/openwrt/staging_dir/hostpkg/include/node
+            /mnt/openwrt/staging_dir/hostpkg/lib/node_modules
+            /mnt/openwrt/staging_dir/hostpkg/share/doc/node
+            /mnt/openwrt/staging_dir/hostpkg/share/systemtap/tapset/node.stp
+            /mnt/openwrt/staging_dir/hostpkg/stamp/.node*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/node-*/.built
+            /mnt/openwrt/build_dir/host/node-*/.prepared*
+            /mnt/openwrt/build_dir/host/node-*/.configured*
+            /mnt/openwrt/build_dir/host/node-*/.built
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/pnpm-*/.built
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.prepared*
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.configured*
+            /mnt/openwrt/build_dir/hostpkg/yarn-*/.built
+            /mnt/openwrt/staging_dir/target-*/usr/include/node
+            /mnt/openwrt/staging_dir/target-*/pkginfo/node*
+            /mnt/openwrt/staging_dir/target-*/stamp/.node*
+            /mnt/openwrt/build_dir/target-*/node-v*/.prepared*
+            /mnt/openwrt/build_dir/target-*/node-v*/.configured*
+            /mnt/openwrt/build_dir/target-*/node-v*/.built
+            /mnt/openwrt/build_dir/target-*/node-v*/.pkgdir
+
+      - name: Save sccache & Package Registries
+        if: always() && steps.check-toolchains.outputs.registry_dirty == 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache-registries.outputs.cache-primary-key }}
+          path: |
+            /mnt/openwrt/.sccache
+            /mnt/openwrt/dl/cargo/registry/index
+            /mnt/openwrt/dl/cargo/registry/cache
+            /mnt/openwrt/dl/cargo/git/db
+            ~/.npm
+            ~/.local/share/pnpm/store
+            ~/.pnpm-store
+            ~/.cache/yarn
 
       - name: Check space usage
         run: df -hT
