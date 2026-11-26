@@ -240,7 +240,7 @@ jobs:
           echo "FPKG=$fpkg" >> $GITHUB_ENV
           during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //' || true)"
           function comp(){
-            echo "compile $ipk"
+            ( echo "compile $ipk"
             cp -rf kiddin9.b/$ipk* package/feeds/kiddin9/
             if [[ $ipk == "honk" ]]; then
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path
@@ -254,7 +254,7 @@ jobs:
               curl -fsSL -o /tmp/zig.tar.xz \
                 "https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz"
               sudo tar -xJf /tmp/zig.tar.xz -C /usr/local
-              sudo ln -sf "/usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig
+              sudo ln -sf "/usr/local/zig-x86_64-linux-${ZIG_VERSION}/zig" /usr/local/bin/zig ) || true
             fi
             if [[ $ipk != luci-app-* ]]; then
               make package/$ipk/compile -j$(($(nproc)+1)) || {
