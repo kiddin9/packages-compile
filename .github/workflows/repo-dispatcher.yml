@@ -13,8 +13,8 @@ on:
   #   branches:
   #     - master
   # 北京时间 00:17
-  schedule:
-    - cron: 41 10 * * *
+  # schedule:
+  #  - cron: 41 10 * * *
   watch:
     types: started
   workflow_dispatch:
