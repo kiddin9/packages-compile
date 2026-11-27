@@ -351,7 +351,6 @@ jobs:
           if [[ $ipk == "honk" ]]; then
             (
               cd "${{ github.workspace }}/openwrt/feeds/kiddin9" &&
-              sudo -E apt-get -qq update &&
               sudo -E apt-get -qq install --no-install-recommends clang llvm libbpf-dev cmake libclang-dev zstd file &&
               { command -v rustup >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path; } &&
               export PATH="$HOME/.cargo/bin:$PATH" &&
