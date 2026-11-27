@@ -40,11 +40,44 @@ jobs:
         workflow_id: all
         access_token: ${{ secrets.TOKEN_KIDDIN9 }}
         force_cancel: true
+
+    - name: Manage build caches
+      continue-on-error: true
+      if: ${{ !contains(github.event.inputs.packages, 'nocache') }}
+      run: |
+        CACHE_TOKEN="${{ secrets.TOKEN_KIDDIN9 || env.REPO_TOKEN || github.token }}"
+        caches_json=$(curl -fsSL \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer $CACHE_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/actions/caches?per_page=100" || echo '{}')
+        if [[ " ${{ github.event.inputs.packages }} " == *" cleancache "* ]]; then
+          stale_ids=$(printf '%s\n' "$caches_json" | jq -r '
+            (.actions_caches // [])
+            | map(select(.key | contains("-cache-openwrt")))[]
+            | .id
+          ')
+        else
+          stale_ids=$(printf '%s\n' "$caches_json" | jq -r '
+            (.actions_caches // [])
+            | map(select(.key | test("-cache-openwrt-[0-9]+$")))
+            | group_by(.key | sub("-cache-openwrt-[0-9]+$"; ""))
+            | .[]
+            | sort_by(.id) | reverse | .[1:][]
+            | .id
+          ')
+        fi
+        for cid in $stale_ids; do
+          echo "Deleting stale cache id: $cid"
+          curl -fsSL -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $CACHE_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/caches/$cid" || true
+        done
     
     - name: Trigger matrix Update
       run: |
         packages_actions=$(curl -H "Authorization: token ${{ env.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/op-packages/actions/runs")
-        fpkg="$(echo "${{github.event.inputs.packages}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+        fpkg="$(echo "${{github.event.inputs.packages}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\|riscv64_generic\| [0-9][0-9.]*\| ssh\| noser\| cw\| nocache\| cleancache\)//g' | sed -e 's/ //g')"
         during="$(echo "${{github.event.inputs.packages}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
         [[ "$fpkg" && ! "$during" ]] || {
         created_at=$(echo $packages_actions | jq -r '.workflow_runs[0].created_at') || true
@@ -136,4 +169,3 @@ jobs:
         delete_workflows: true
         workflows_keep_day: 10
         gh_token: ${{ secrets.TOKEN_KIDDIN9 }}
-       

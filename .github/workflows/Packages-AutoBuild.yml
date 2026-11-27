@@ -94,7 +94,7 @@ jobs:
         sudo -E apt-get -qq install build-essential libncurses-dev zlib1g-dev gawk git \
         gettext libssl-dev xsltproc rsync wget unzip \
         llvm python3-pyelftools libpython3-dev aria2 jq qemu-utils rename \
-        libelf-dev libgmp3-dev libmpc-dev libfuse-dev bc autopoint upx dwarves
+        libelf-dev libgmp3-dev libmpc-dev libfuse-dev bc autopoint upx dwarves ccache zstd
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "Asia/Shanghai"
@@ -145,6 +145,9 @@ jobs:
         elif [[ "${{matrix.target}}" == "riscv64_generic" ]]; then
           SDK_PATH="releases/$REPO_BRANCH/targets/siflower/sf21/openwrt-sdk-$REPO_BRANCH-siflower-sf21_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
         fi
+        SDK_ABI="$(echo "$SDK_PATH" | grep -oE 'gcc-[0-9.]+_musl(_eabi)?' || echo "musl")"
+        echo "REPO_BRANCH=$REPO_BRANCH" >> $GITHUB_ENV
+        echo "CACHE_MIXKEY=${{matrix.target}}-${REPO_BRANCH}-${SDK_ABI}" >> $GITHUB_ENV
         PRIMARY_URL="https://downloads.openwrt.org/$SDK_PATH"
         MIRROR_URL="https://mirror-03.infra.openwrt.org/$SDK_PATH"
         MIRROR_URL2="https://mirror.accum.se/mirror/openwrt.org/$SDK_PATH"
@@ -194,9 +197,9 @@ jobs:
         mkdir -p openwrt
         tar -xf sdk.tar.zst -C openwrt
         cd openwrt
-        cp -rf ./openwrt-sdk*/. ./ 2>/dev/null || true
-        cp -rf ./openwrt-sdk*/build_dir/. ./build_dir/ || true
-        cp -rf ./openwrt-sdk*/staging_dir/. ./staging_dir/ || true
+        cp -arf ./openwrt-sdk*/. ./ 2>/dev/null || true
+        cp -arf ./openwrt-sdk*/build_dir/. ./build_dir/ || true
+        cp -arf ./openwrt-sdk*/staging_dir/. ./staging_dir/ || true
         rm -rf openwrt-sdk* ../sdk.tar.zst
         cp -rf ../devices ./
         cp -rf devices/common/. ./
@@ -212,11 +215,28 @@ jobs:
         fi
         cp -Rf ./diy/* ./ || true
         sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+        if [[ " ${{ github.event.action }} " == *" nocache "* ]]; then
+          sed -i '/^CONFIG_CCACHE=/d' .config
+        elif [ -f feeds/packages/lang/rust/Makefile ] && ! grep -q 'build\.ccache' feeds/packages/lang/rust/Makefile; then
+          sed -i '/llvm\.download-ci-llvm/a\\t--set=build.ccache=true \\' feeds/packages/lang/rust/Makefile
+        fi
         if [ -f "devices/${{matrix.target}}/.config" ]; then
           echo >> .config
           cat devices/${{matrix.target}}/.config >> .config
         fi
         make defconfig
+
+    - name: Cache OpenWrt Build
+      id: cachewrt
+      uses: stupidloud/cachewrtbuild@main
+      if: ${{ !contains(github.event.action, 'nocache') }}
+      with:
+        ccache: true
+        toolchain: false
+        skip: false
+        prefix: openwrt
+        mixkey: ${{ env.CACHE_MIXKEY }}
+        skip_saving: ${{ env.SKIP_CACHE_SAVE == 'true' }}
 
     - name: SSH connection to Actions
       uses: owenthereal/action-upterm@v2
@@ -227,6 +247,17 @@ jobs:
     - name: Prepare
       run: |
         cd openwrt
+        if [[ " ${{ github.event.action }} " != *" nocache "* ]] && command -v ccache >/dev/null 2>&1; then
+          mkdir -p .ccache
+          cat > .ccache/ccache.conf << 'EOF'
+        max_size = 1.5G
+        compiler_check = %compiler% -dumpmachine; %compiler% -dumpversion
+        hash_dir = false
+        sloppiness = file_macro,locale,time_macros,include_file_mtime,include_file_ctime
+        EOF
+          CCACHE_DIR="$PWD/.ccache" ccache -z
+          CCACHE_DIR="$PWD/.ccache" ccache -s
+        fi
         mv -f package/feeds/kiddin9 kiddin9.b
         mkdir package/feeds/kiddin9
         mv -fv kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qt*,libdouble*,upx,node-pnpm} package/feeds/kiddin9/ || true
@@ -236,7 +267,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(($(nproc)+1)) thread compile"
-        fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|i386_pentium4\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\|riscv64_generic\| [0-9][0-9.]*\| ssh\| noser\| cw\| all\| lang\)//g' | sed -e 's/ //g')"
+        fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|i386_pentium4\|arm_arm1176jzf-s_vfp\|aarch64_cortex-a72\|aarch64_cortex-a76\|arm_cortex-a7\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a15_neon-vfpv4\|arm_cortex-a5_vfpv4\|mipsel_24kc\|mips_24kc\|aarch64_cortex-a53\|arm_xscale\|arm_cortex-a9_vfpv3-d16\|riscv64_generic\| [0-9][0-9.]*\| ssh\| noser\| cw\| nocache\| cleancache\| all\| lang\)//g' | sed -e 's/ //g')"
         echo "FPKG=$fpkg" >> $GITHUB_ENV
         during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //' || true)"
         function comp(){
@@ -318,6 +349,15 @@ jobs:
             for ipk in $(cat ipk.txt); do
               comp
             done
+          fi
+        fi
+        if [[ " ${{ github.event.action }} " != *" nocache "* ]] && command -v ccache >/dev/null 2>&1 && [ -d .ccache ]; then
+          echo "=== ccache statistics ==="
+          CCACHE_DIR="$PWD/.ccache" ccache -s || true
+          ccache_misses=$(CCACHE_DIR="$PWD/.ccache" ccache --print-stats 2>/dev/null | awk '$1 == "cache_miss" { print $2 }')
+          if [ "${ccache_misses:-1}" = "0" ]; then
+            echo "No new ccache misses recorded in this build; skipping redundant cache save."
+            echo "SKIP_CACHE_SAVE=true" >> $GITHUB_ENV
           fi
         fi
         echo "status=success" >> $GITHUB_ENV
