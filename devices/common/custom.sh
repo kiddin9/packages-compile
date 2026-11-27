@@ -73,3 +73,6 @@ sed -i '/WARNING: Makefile/d' scripts/package-metadata.pl
 
 cp -f devices/common/po2lmo staging_dir/host/bin/po2lmo
 chmod +x staging_dir/host/bin/po2lmo
+if [ ! -x staging_dir/host/bin/ccache ] && command -v ccache >/dev/null 2>&1; then
+	ln -sf "$(command -v ccache)" staging_dir/host/bin/ccache
+fi
